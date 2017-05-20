@@ -28,6 +28,6 @@
 "&"             {return T_AMPERSAND;}
 "|>>"           {return T_AFTERCOND;}
 (<|>|==|!=)     {return T_RELOP;}
-[a-zA-Z]+       {return T_ID;}
+[a-zA-Z]+       { yylval.sval = yytext; return T_ID;}
 
 %%
