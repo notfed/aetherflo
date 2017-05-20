@@ -35,7 +35,7 @@ void yyerror(const char* s);
 %type<ival> expr
 %type<ival> factor
 %type<ival> term
-%type<bval> condexpr
+%type<bval> boolexpr
 
 %start stmts
 
@@ -54,12 +54,12 @@ print   : T_AMPERSAND T_ID            { printf("print %s\n",$2); }
 	;
 assn    : T_LBRACE expr T_RBRACE T_PIPE T_COLON T_ID   { printf("store %d in %s\n",$2,$6); }
 	;
-cond    : T_LPAREN condexpr T_RPAREN T_QUESTION T_QUESTION T_LPAREN stmt T_RPAREN T_AFTERCOND { printf("conditional stmt\n"); }
+cond    : T_LPAREN boolexpr T_RPAREN T_QUESTION T_QUESTION T_LPAREN stmt T_RPAREN T_AFTERCOND { printf("conditional stmt\n"); }
 	;
-condexpr : T_ID T_RELOP T_ID    { }
-	 | T_ID T_RELOP T_INT   { }
-         | T_INT T_RELOP T_ID   { }
+
+boolexpr : expr T_RELOP expr { }
          ;
+
 expr	: expr '+' term		{ $$ = $1 + $3; }
      	| term
 	;
@@ -68,6 +68,7 @@ term	: term '*' factor 	{ $$ = $1 * $3; }
 	;
 factor	: T_LPAREN expr T_RPAREN		{ printf("factor\n"); $$ = $2; }
        	| T_INT
+       	| T_ID
 	;
 %%
 
