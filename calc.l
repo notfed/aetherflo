@@ -12,7 +12,7 @@
 %%
 
 [ \t]	; // ignore all whitespace
-[0-9]+		{ yylval.ival = atoi(yytext); return T_INT;}
+[0-9]+		{ yylval.val = atoi(yytext); return T_INT;}
 \n		{return T_NEWLINE;}
 "+"		{return T_PLUS;}
 "-"		{return T_MINUS;}
@@ -28,6 +28,6 @@
 "&"             {return T_AMPERSAND;}
 "|>>"           {return T_AFTERCOND;}
 (<|>|==|!=)     {return T_RELOP;}
-[a-zA-Z]+       { yylval.sval = yytext; return T_ID;}
+[a-zA-Z]+       { yylval.name = yytext; return T_ID;}
 
 %%

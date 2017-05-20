@@ -48,8 +48,14 @@ struct
         } data;
 } AstElement;
 
+void execute(struct AstElement* ast);
+
+struct AstElement* makeEmpty();
+struct AstElement* makeVal(int val);
+struct AstElement* makeId(char *name);
+
 struct AstElement* makeStatement(struct AstElement* childStatements, struct AstElement* thisStatement);
-struct AstElement* makeExp(struct AstElement* left, struct AstElement* right, char op);
+struct AstElement* makeExp(struct AstElement* left, struct AstElement* right, char* op);
 struct AstElement* makeBoolExp(struct AstElement* left, char* relop, struct AstElement* right);
 struct AstElement* makeAssignment(char*name, struct AstElement* right);
 struct AstElement* makeConditional(struct AstElement*condition, struct AstElement* statement);

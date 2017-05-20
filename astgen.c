@@ -18,7 +18,7 @@ struct AstElement* makeStatement(struct AstElement* childStatements, struct AstE
 	return result;
 }
 
-struct AstElement* makeExp(struct AstElement* left, struct AstElement* right, char op)
+struct AstElement* makeExp(struct AstElement* left, struct AstElement* right, char* op)
 {
 	struct AstElement* result = checkAlloc(sizeof(AstElement));
 	return result;
@@ -47,4 +47,22 @@ struct AstElement* makePrint(struct AstElement* expr)
 	struct AstElement* result = checkAlloc(sizeof(AstElement));
 	return result;
 }
+struct AstElement* makeEmpty()
+{
+	struct AstElement* result = checkAlloc(sizeof(AstElement));
+	return result;
+}
 
+struct AstElement* makeVal(int val)
+{
+	struct AstElement* result = checkAlloc(sizeof(AstElement));
+	return result;
+}
+struct AstElement* makeId(char* name)
+{
+	struct AstElement* result = checkAlloc(sizeof(AstElement));
+	return result;
+}
+void execute(struct AstElement* ast)
+{
+}
