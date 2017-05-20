@@ -18,8 +18,15 @@
 "-"		{return T_MINUS;}
 "*"		{return T_MULTIPLY;}
 "/"		{return T_DIVIDE;}
-"("		{return T_LEFT;}
-")"		{return T_RIGHT;}
+"("		{return T_LPAREN;}
+")"		{return T_RPAREN;}
+"{"             {return T_LBRACE;}
+"}"             {return T_RBRACE;}
+"|"             {return T_PIPE;}
+":"             {return T_COLON;}
+"?"             {return T_QUESTION;}
+"&"             {return T_AMPERSAND;}
+"|>>"           {return T_AFTERCOND;}
 (<|>|==|!=)     {return T_RELOP;}
 [a-zA-Z]+       {return T_ID;}
 
