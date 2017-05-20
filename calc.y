@@ -73,7 +73,7 @@ factor	: T_LPAREN expr T_RPAREN		{ printf("factor\n"); $$ = $2; }
 
 extern int yy_flex_debug;
 int main() {
- yy_flex_debug = 1;
+        yy_flex_debug = 0;
 	yyin = stdin;
 
 	do { 
