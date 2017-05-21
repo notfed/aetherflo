@@ -26,7 +26,6 @@
 ":"             {return T_COLON;}
 "?"             {return T_QUESTION;}
 "&"             {return T_AMPERSAND;}
-"|>>"           {return T_AFTERCOND;}
 (<|>|==|!=)     {return T_RELOP;}
 [a-zA-Z]+       { yylval.name = yytext; return T_ID;}
 

@@ -57,7 +57,7 @@ print   : T_AMPERSAND expr            { $$ = makePrint($2); }
 	;
 assn    : T_LBRACE expr T_RBRACE T_PIPE T_COLON T_ID   { $$ = makeAssignment(makeId($6),$2); }
 	;
-cond    : T_LPAREN boolexpr T_RPAREN T_QUESTION T_QUESTION T_LPAREN stmt T_RPAREN T_AFTERCOND { $$ = makeConditional($2,$7); }
+cond    : T_LPAREN boolexpr T_RPAREN T_QUESTION T_QUESTION T_LPAREN stmt T_RPAREN { $$ = makeConditional($2,$7); }
 	;
 
 boolexpr : expr T_RELOP expr { $$ = makeBoolExp($1,makeOp($2),$3); }
