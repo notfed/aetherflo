@@ -8,6 +8,7 @@
 extern int yylex();
 extern int yyparse();
 extern FILE* yyin;
+extern int yylineno;
 
 void yyerror(const char* s);
 
@@ -87,6 +88,6 @@ int main() {
 }
 
 void yyerror(const char* s) {
-	fprintf(stderr, "Parse error: %s\n", s);
+	fprintf(stderr, "error: %s: line %d\n", s, yylineno);
 	exit(1);
 }
