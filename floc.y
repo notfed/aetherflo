@@ -31,15 +31,12 @@ int yydebug=1;
 %token<op> T_PLUS T_MINUS T_MULTIPLY T_DIVIDE
 %token<op> T_RELOP
 
-%token T_AMPERSAND
-%token T_LBRACE T_RBRACE
-%token T_LPAREN T_RPAREN
-%token T_PIPE T_COLON T_QUESTION T_AFTERCOND
-%token T_NEWLINE T_QUIT
-%left T_PLUS T_MINUS
-%left T_MULTIPLY T_DIVIDE
+%token T_NEWLINE
+%left '+' '-'
+%left '*' '/'
+%nonassoc '<' '>' T_LE T_GE T_EQ T_NE
 
-%type<ast> stmts stmt print assn cond expr term factor boolexpr line
+%type<ast> stmts stmt print assn cond expr factor line
 
 %start program
 
@@ -56,23 +53,27 @@ stmt	: assn
         | cond
         | print     
         ;
-print   : T_AMPERSAND expr       { $$ = makePrint($2); }
+print   : '&' expr       { $$ = makePrint($2); }
 	;
-assn    : T_LBRACE expr T_RBRACE T_PIPE T_COLON T_ID   { $$ = makeAssignment(makeId($6),$2); }
+assn    : '{' expr '}' '|' ':' T_ID   { $$ = makeAssignment(makeId($6),$2); }
 	;
-cond    : T_LPAREN boolexpr T_RPAREN T_QUESTION T_QUESTION T_LPAREN stmt T_RPAREN { $$ = makeConditional($2,$7); }
+cond    : '(' expr ')' '?' '?' '(' stmt ')' { $$ = makeConditional($2,$7); }
 	;
 
-boolexpr : expr T_RELOP expr { $$ = makeBoolExp($1,makeOp($2),$3); }
-         ;
+expr    : expr '<' expr { $$ = makeExp($1,$3, makeOp("+")); }
+     	| expr '>' expr { $$ = makeExp($1,$3, makeOp("+")); }
+     	| expr T_EQ expr { $$ = makeExp($1,$3, makeOp("+")); }
+     	| expr T_NE expr { $$ = makeExp($1,$3, makeOp("+")); }
+     	| expr T_LE expr { $$ = makeExp($1,$3, makeOp("+")); }
+     	| expr T_GE expr { $$ = makeExp($1,$3, makeOp("+")); }
+     	| expr '+' expr { $$ = makeExp($1,$3, makeOp("+")); }
+     	| expr '-' expr { $$ = makeExp($1,$3, makeOp("+")); }
+     	| expr '*' expr { $$ = makeExp($1,$3, makeOp("+")); }
+     	| expr '/' expr { $$ = makeExp($1,$3, makeOp("+")); }
+        | factor
+	;
 
-expr	: expr T_PLUS term		{ $$ = makeExp($1,$3, makeOp("+")); }
-     	| term
-	;
-term	: term T_MULTIPLY factor 	{ $$ = makeExp($1,$3,makeOp("*")); }
-     	| factor
-	;
-factor	: T_LPAREN expr T_RPAREN  { $$ = $2; }
+factor	: '(' expr ')' { $$ = $2; }
        	| T_INT  { $$ = makeVal($1); }
        	| T_ID   { $$ = makeId($1); }
 	;

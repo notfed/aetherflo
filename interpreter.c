@@ -5,8 +5,7 @@
 #include <string.h>
 #include <assert.h>
 
-static int evaluateInt(struct AstElement* ast);
-static int evaluateBool(struct AstElement* ast);
+static int evaluateExpr(struct AstElement* ast);
 
 typedef struct aatree_item
 {
@@ -26,7 +25,6 @@ static void* checkAlloc(size_t sz)
   return result;
 }
 
-
 void interpret_statements(AstElement* ast)
 {
         printf("-Statement\n");
@@ -36,13 +34,13 @@ void interpret_statements(AstElement* ast)
 void interpret_print(AstElement* ast)
 {
         printf("-Print\n");
-        int result = evaluateInt(ast->data.print.expr);
+        int result = evaluateExpr(ast->data.print.expr);
         printf("%d\n", result);
 }
 void interpret_conditional(AstElement* ast)
 {
         printf("-Conditional\n");
-        int result = evaluateBool(ast->data.conditional.condition);
+        int result = evaluateExpr(ast->data.conditional.condition);
         if(result) {
             execute(ast->data.conditional.statement);
         }
@@ -53,7 +51,7 @@ void interpret_assignment(AstElement* ast)
 
 	/* Fix our two operands: name and value */
         char* name = ast->data.assignment.name->data.name;
-        int val = evaluateInt(ast->data.assignment.right);
+        int val = evaluateExpr(ast->data.assignment.right);
 
         printf("Assignment %s=%d\n", name, val);
 
@@ -94,7 +92,7 @@ void execute(struct AstElement* ast)
             fprintf(stderr,"error: fatal: attempt to execute unexecutable node\n");
     }
 }
-int evaluateInt(struct AstElement* ast)
+int evaluateExpr(struct AstElement* ast)
 {
     if(ast->kind == ekVal) {
         return ast->data.val;
@@ -112,50 +110,31 @@ int evaluateInt(struct AstElement* ast)
         AstElement* right = ast->data.expression.right;
 
         if(strcmp(op,"+")==0) {
-            return evaluateInt(left)+evaluateInt(right);
+            return evaluateExpr(left)+evaluateExpr(right);
         } else if(strcmp(op,"-")==0) {
-            return evaluateInt(left)-evaluateInt(right);
+            return evaluateExpr(left)-evaluateExpr(right);
         } else if(strcmp(op,"*")==0) {
-            return evaluateInt(left)*evaluateInt(right);
+            return evaluateExpr(left)*evaluateExpr(right);
         } else if(strcmp(op,"/")==0) {
-            return evaluateInt(left)/evaluateInt(right);
+            return evaluateExpr(left)/evaluateExpr(right);
+        } else if(strcmp(op,"<")==0) {
+            return evaluateExpr(left)<evaluateExpr(right);
+        } else if(strcmp(op,"<=")==0) {
+            return evaluateExpr(left)<=evaluateExpr(right);
+        } else if(strcmp(op,">")==0) {
+            return evaluateExpr(left)>evaluateExpr(right);
+        } else if(strcmp(op,">=")==0) {
+            return evaluateExpr(left)>=evaluateExpr(right);
+        } else if(strcmp(op,"==")==0) {
+            return evaluateExpr(left)==evaluateExpr(right);
+        } else if(strcmp(op,"!=")==0) {
+            return evaluateExpr(left)!=evaluateExpr(right);
         } else {
-            fprintf(stderr,"fatal error: invalid op\n");
+            fprintf(stderr,"fatal error: invalid op '%s'\n", op);
             exit(1);
         }
     } else {
         fprintf(stderr,"fatal error: invalid expression\n");
-        exit(1);
-    }
-}
-/* 0 is false, 1 is true */
-int evaluateBool(struct AstElement* ast)
-{
-    if(ast->kind == ekVal) {
-        return ast->data.val;
-    } else if(ast->kind == ekId) {
-        fprintf(stderr, "error: boolean variables not supported\n");
-        exit(1);
-    } else if(ast->kind == ekExpression) {
-
-        AstElement* left = ast->data.expression.left;
-        char* op = ast->data.expression.op->data.symbol;
-        AstElement* right = ast->data.expression.right;
-
-        if(strcmp(op,"<")==0) {
-            return evaluateBool(left)<evaluateBool(right);
-        } else if(strcmp(op,"<=")==0) {
-            return evaluateBool(left)<=evaluateBool(right);
-        } else if(strcmp(op,">")==0) {
-            return evaluateBool(left)>evaluateBool(right);
-        } else if(strcmp(op,">=")==0) {
-            return evaluateBool(left)>=evaluateBool(right);
-        } else {
-            fprintf(stderr,"error: fatal: invalid op\n");
-            exit(1);
-        }
-    } else {
-        fprintf(stderr,"error: fatal: attempt to bool-evaluate non-boolean expression\n");
         exit(1);
     }
 }
