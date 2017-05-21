@@ -13,7 +13,7 @@ typedef struct aatree_item
     int val;
 } aatree_item;
 
-static aatree symbols;
+static aatree* symbols = NULL;
 
 static void* checkAlloc(size_t sz)
 {
@@ -23,43 +23,58 @@ static void* checkAlloc(size_t sz)
     fprintf(stderr, "alloc failed\n");
     exit(1);
   }
+  return result;
 }
 
 
 void interpret_statements(AstElement* ast)
 {
+        printf("-Statement\n");
         execute(ast->data.statements.thisStatement);
         execute(ast->data.statements.childStatements);
 }
 void interpret_print(AstElement* ast)
 {
+        printf("-Print\n");
         int result = evaluateInt(ast->data.print.expr);
-        printf("Print: %d\n", result);
+        printf("%d\n", result);
 }
 void interpret_conditional(AstElement* ast)
 {
-        printf("Conditional\n");
+        printf("-Conditional\n");
 }
 void interpret_assignment(AstElement* ast)
 {
+        printf("-Assignment\n");
 
 	/* Fix our two operands: name and value */
         char* name = ast->data.assignment.name->data.name;
         int val = evaluateInt(ast->data.assignment.right);
 
-        printf("Assignment to %s\n", name);
+        printf("Assignment %s=%d\n", name, val);
 
 	/* If variable already exists, update it in-place */
-        aatree* node = aatree_lookup(&symbols,name);
+        aatree* node = aatree_lookup(symbols,name);
         if(node != NULL) {
             aatree_item* item = (aatree_item*)(node->value);
 	    item->val = val;
+            printf("(Updated %s to %d)", name, val);
         }
 	/* Otherwise, create variable anew */
         else {
             aatree_item* newNode = checkAlloc(sizeof(aatree_item));
             newNode->val = val;
-            aatree_insert(&symbols,name,newNode);
+            symbols = aatree_insert(symbols,name,newNode);
+
+            /* Just some debugging stuff to prove it worked; remove later */
+            printf("(New var %s set to %d)\n", name, val);
+            void* doubleCheck = aatree_lookup(symbols,name);
+            if(doubleCheck == NULL ) {
+                printf("(Var %s failed to update)\n", name);
+            } else {
+                aatree_item* item = (aatree_item*)(doubleCheck);
+                printf("(Var %s is now %d)\n", name, item->val); 
+            }
         }
 }
 
@@ -71,6 +86,8 @@ void execute(struct AstElement* ast)
         case ekPrint: interpret_print(ast); break;
         case ekAssignment: interpret_assignment(ast); break;
         case ekConditional: interpret_conditional(ast); break;
+        default: 
+            fprintf(stderr,"error: fatal: attempt to execute unexecutable node\n");
     }
 }
 int evaluateInt(struct AstElement* ast)
@@ -78,7 +95,7 @@ int evaluateInt(struct AstElement* ast)
     if(ast->kind == ekVal) {
         return ast->data.val;
     } else if(ast->kind == ekId) {
-        aatree* node = aatree_lookup(&symbols,ast->data.name);
+        aatree* node = aatree_lookup(symbols,ast->data.name);
         if(node == NULL) {
             fprintf(stderr, "error: use of undeclared variable '%s'\n", ast->data.name);
             exit(1);
@@ -91,13 +108,13 @@ int evaluateInt(struct AstElement* ast)
         char* op = ast->data.expression.op->data.symbol;
         AstElement* right = ast->data.expression.left;
 
-        if(strcmp(op,"+")) {
+        if(strcmp(op,"+")==0) {
             return evaluateInt(left)+evaluateInt(right);
-        } else if(strcmp(op,"-")) {
+        } else if(strcmp(op,"-")==0) {
             return evaluateInt(left)-evaluateInt(right);
-        } else if(strcmp(op,"*")) {
+        } else if(strcmp(op,"*")==0) {
             return evaluateInt(left)*evaluateInt(right);
-        } else if(strcmp(op,"/")) {
+        } else if(strcmp(op,"/")==0) {
             return evaluateInt(left)/evaluateInt(right);
         } else {
             fprintf(stderr,"fatal error: invalid op\n");
@@ -122,18 +139,20 @@ int evaluateBool(struct AstElement* ast)
         char* op = ast->data.expression.op->data.symbol;
         AstElement* right = ast->data.expression.left;
 
-        if(strcmp(op,"<")) {
+        if(strcmp(op,"<")==0) {
             return evaluateBool(left)<evaluateBool(right);
-        } else if(strcmp(op,"<=")) {
+        } else if(strcmp(op,"<=")==0) {
             return evaluateBool(left)<=evaluateBool(right);
-        } else if(strcmp(op,">")) {
+        } else if(strcmp(op,">")==0) {
             return evaluateBool(left)>evaluateBool(right);
-        } else if(strcmp(op,">=")) {
+        } else if(strcmp(op,">=")==0) {
             return evaluateBool(left)>=evaluateBool(right);
         } else {
-            fprintf(stderr,"fatal error: invalid op\n");
+            fprintf(stderr,"error: fatal: invalid op\n");
             exit(1);
         }
-
+    } else {
+        fprintf(stderr,"error: fatal: attempt to bool-evaluate non-boolean expression\n");
+        exit(1);
     }
 }

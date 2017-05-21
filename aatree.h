@@ -5,6 +5,7 @@
 /* Source: https://github.com/ccxvii/minilibs */
 /* Public Domain */
 
+
 typedef struct aatree
 {
 	char *key;
@@ -13,8 +14,10 @@ typedef struct aatree
 	int level;
 } aatree;
 
-struct aatree *aatree_insert(struct aatree *node, const char *key, void *value);
-void *aatree_lookup(struct aatree *node, const char *key);
-void aatree_free(struct aatree *node);
+aatree* aatree_insert(aatree *node, const char *key, void *value);
+void* aatree_lookup(aatree *node, const char *key);
+void aatree_free(aatree *node);
+
+void aatree_print(aatree *node, int level);
 
 #endif

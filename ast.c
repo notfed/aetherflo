@@ -13,7 +13,9 @@ static void* checkAlloc(size_t sz)
     fprintf(stderr, "alloc failed\n");
     exit(1);
   }
+  return result;
 }
+
 struct AstElement* makeStatement(struct AstElement* thisStatement, struct AstElement* childStatements)
 {
 	struct AstElement* result = checkAlloc(sizeof(AstElement));
