@@ -1,9 +1,9 @@
 #ifndef ASTGEN_H
 #define ASTGEN_H
 
-struct
+typedef struct AstElement
 {
-    enum {ekId, ekNumber, ekStatements, ekExpression, ekCondExpression, ekAssignment, ekConditional, ekPrint} kind;
+    enum {ekEmpty, ekId, ekVal, ekStatements, ekExpression, ekBoolExpression, ekAssignment, ekConditional, ekPrint} kind;
     union
     {
             int val;
