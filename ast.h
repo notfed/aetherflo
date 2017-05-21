@@ -3,7 +3,7 @@
 
 typedef struct AstElement
 {
-    enum {ekEmpty, ekId, ekVal, ekOp, ekStatements, ekExpression, ekBoolExpression, ekAssignment, ekConditional, ekPrint} kind;
+    enum {ekEmpty=1, ekId, ekVal, ekOp, ekStatements, ekExpression, ekBoolExpression, ekAssignment, ekConditional, ekPrint} kind;
     union
     {
             int val;

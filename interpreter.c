@@ -87,8 +87,10 @@ void execute(struct AstElement* ast)
         case ekPrint: interpret_print(ast); break;
         case ekAssignment: interpret_assignment(ast); break;
         case ekConditional: interpret_conditional(ast); break;
+        case ekEmpty: break;
         default: 
-            fprintf(stderr,"error: fatal: attempt to execute unexecutable node\n");
+            fprintf(stderr,"error: fatal: attempt to execute unexecutable node %d\n", ast->kind);
+            break;
     }
 }
 int evaluateExpr(struct AstElement* ast)
