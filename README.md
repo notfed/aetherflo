@@ -25,6 +25,14 @@ Each `conditional` statement will evaluate the given `expression`, and condition
 
 Each `expression`  evaluates to an integer.  Standard arithmetic is supported with the `+`, `-`, `*`, and `/` operators.  In addition, boolean logic is supported with operators `==`, `!=`, `<`, `<=`, `>`, and `>=`.
 
+Here is a sample program:
+
+    {5}|:x
+    {7}|:y
+    (x>y)??(&x)
+    (y>=x)??(&y)
+
+This outputs `7`.
 
 ## About the Interpreter
 
