@@ -42,6 +42,10 @@ void interpret_print(AstElement* ast)
 void interpret_conditional(AstElement* ast)
 {
         printf("-Conditional\n");
+        int result = evaluateBool(ast->data.conditional.condition);
+        if(result) {
+            execute(ast->data.conditional.statement);
+        }
 }
 void interpret_assignment(AstElement* ast)
 {
