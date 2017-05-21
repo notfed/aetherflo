@@ -1,4 +1,5 @@
 #include "interpreter.h"
+#include "critbit.h"
 #include <stdio.h>
 
 void interpret_statements(AstElement* ast)
