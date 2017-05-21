@@ -60,16 +60,16 @@ assn    : '{' expr '}' '|' ':' T_ID   { $$ = makeAssignment(makeId($6),$2); }
 cond    : '(' expr ')' '?' '?' '(' stmt ')' { $$ = makeConditional($2,$7); }
 	;
 
-expr    : expr '<' expr { $$ = makeExp($1,$3, makeOp("+")); }
-     	| expr '>' expr { $$ = makeExp($1,$3, makeOp("+")); }
-     	| expr T_EQ expr { $$ = makeExp($1,$3, makeOp("+")); }
-     	| expr T_NE expr { $$ = makeExp($1,$3, makeOp("+")); }
-     	| expr T_LE expr { $$ = makeExp($1,$3, makeOp("+")); }
-     	| expr T_GE expr { $$ = makeExp($1,$3, makeOp("+")); }
+expr    : expr '<' expr { $$ = makeExp($1,$3, makeOp("<")); }
+     	| expr '>' expr { $$ = makeExp($1,$3, makeOp(">")); }
+     	| expr T_EQ expr { $$ = makeExp($1,$3, makeOp("==")); }
+     	| expr T_NE expr { $$ = makeExp($1,$3, makeOp("!=")); }
+     	| expr T_LE expr { $$ = makeExp($1,$3, makeOp("<=")); }
+     	| expr T_GE expr { $$ = makeExp($1,$3, makeOp(">=")); }
      	| expr '+' expr { $$ = makeExp($1,$3, makeOp("+")); }
-     	| expr '-' expr { $$ = makeExp($1,$3, makeOp("+")); }
-     	| expr '*' expr { $$ = makeExp($1,$3, makeOp("+")); }
-     	| expr '/' expr { $$ = makeExp($1,$3, makeOp("+")); }
+     	| expr '-' expr { $$ = makeExp($1,$3, makeOp("-")); }
+     	| expr '*' expr { $$ = makeExp($1,$3, makeOp("*")); }
+     	| expr '/' expr { $$ = makeExp($1,$3, makeOp("/")); }
         | factor
 	;
 
