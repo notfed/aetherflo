@@ -54,18 +54,18 @@ stmt	: assn
         ;
 print   : T_AMPERSAND expr            { $$ = makePrint($2); }
 	;
-assn    : T_LBRACE expr T_RBRACE T_PIPE T_COLON T_ID   { $$ = makeAssignment($6,$2); }
+assn    : T_LBRACE expr T_RBRACE T_PIPE T_COLON T_ID   { $$ = makeAssignment(makeId($6),$2); }
 	;
 cond    : T_LPAREN boolexpr T_RPAREN T_QUESTION T_QUESTION T_LPAREN stmt T_RPAREN T_AFTERCOND { $$ = makeConditional($2,$7); }
 	;
 
-boolexpr : expr T_RELOP expr { $$ = makeBoolExp($1,$2,$3); }
+boolexpr : expr T_RELOP expr { $$ = makeBoolExp($1,makeOp($2),$3); }
          ;
 
-expr	: expr '+' term		{ $$ = makeExp($1,$3, "+"); }
+expr	: expr '+' term		{ $$ = makeExp($1,$3, makeOp("+")); }
      	| term
 	;
-term	: term '*' factor 	{ $$ = makeExp($1,$3,"*"); }
+term	: term '*' factor 	{ $$ = makeExp($1,$3,makeOp("*")); }
      	| factor
 	;
 factor	: T_LPAREN expr T_RPAREN  { $$ = $2; }
