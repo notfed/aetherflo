@@ -27,19 +27,16 @@ static void* checkAlloc(size_t sz)
 
 void interpret_statements(AstElement* ast)
 {
-        printf("-Statement\n");
         execute(ast->data.statements.thisStatement);
         execute(ast->data.statements.childStatements);
 }
 void interpret_print(AstElement* ast)
 {
-        printf("-Print\n");
         int result = evaluateExpr(ast->data.print.expr);
         printf("%d\n", result);
 }
 void interpret_conditional(AstElement* ast)
 {
-        printf("-Conditional\n");
         int result = evaluateExpr(ast->data.conditional.condition);
         if(result) {
             execute(ast->data.conditional.statement);
@@ -47,35 +44,20 @@ void interpret_conditional(AstElement* ast)
 }
 void interpret_assignment(AstElement* ast)
 {
-        printf("-Assignment\n");
-
 	/* Fix our two operands: name and value */
         char* name = ast->data.assignment.name->data.name;
         int val = evaluateExpr(ast->data.assignment.right);
-
-        printf("Assignment %s=%d\n", name, val);
 
 	/* If variable already exists, update it in-place */
         aatree_item* item = (aatree_item*)(aatree_lookup(symbols,name));
         if(item != NULL) {
 	    item->val = val;
-            printf("(Updated %s to %d)", name, val);
         }
 	/* Otherwise, create variable anew */
         else {
             aatree_item* newNode = checkAlloc(sizeof(aatree_item));
             newNode->val = val;
             symbols = aatree_insert(symbols,name,newNode);
-
-            /* Just some debugging stuff to prove it worked; remove later */
-            printf("(New var %s set to %d)\n", name, val);
-            void* doubleCheck = aatree_lookup(symbols,name);
-            if(doubleCheck == NULL ) {
-                printf("(Var %s failed to update)\n", name);
-            } else {
-                aatree_item* item = (aatree_item*)(doubleCheck);
-                printf("(Var %s is now %d)\n", name, item->val); 
-            }
         }
 }
 
