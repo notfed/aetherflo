@@ -4,6 +4,11 @@
 #include <string.h>
 #include <assert.h>
 
+void execute(struct AstElement* ast)
+{
+	printf("TODO: Execute...\n");
+}
+
 static void* checkAlloc(size_t sz)
 {
   void* result = calloc(sz, 1);
@@ -96,8 +101,4 @@ struct AstElement* makeOp(char *symbol)
 	result->data.symbol = checkAlloc(strlen(symbol)+1);
 	strcpy(result->data.symbol, symbol);
 	return result;
-}
-void execute(struct AstElement* ast)
-{
-	printf("TODO: Execute...");
 }
