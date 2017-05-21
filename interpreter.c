@@ -56,9 +56,8 @@ void interpret_assignment(AstElement* ast)
         printf("Assignment %s=%d\n", name, val);
 
 	/* If variable already exists, update it in-place */
-        aatree* node = aatree_lookup(symbols,name);
-        if(node != NULL) {
-            aatree_item* item = (aatree_item*)(node->value);
+        aatree_item* item = (aatree_item*)(aatree_lookup(symbols,name));
+        if(item != NULL) {
 	    item->val = val;
             printf("(Updated %s to %d)", name, val);
         }
