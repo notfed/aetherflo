@@ -109,7 +109,7 @@ int evaluateInt(struct AstElement* ast)
 
         AstElement* left = ast->data.expression.left;
         char* op = ast->data.expression.op->data.symbol;
-        AstElement* right = ast->data.expression.left;
+        AstElement* right = ast->data.expression.right;
 
         if(strcmp(op,"+")==0) {
             return evaluateInt(left)+evaluateInt(right);
@@ -140,7 +140,7 @@ int evaluateBool(struct AstElement* ast)
 
         AstElement* left = ast->data.expression.left;
         char* op = ast->data.expression.op->data.symbol;
-        AstElement* right = ast->data.expression.left;
+        AstElement* right = ast->data.expression.right;
 
         if(strcmp(op,"<")==0) {
             return evaluateBool(left)<evaluateBool(right);
