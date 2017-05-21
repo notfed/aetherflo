@@ -12,8 +12,8 @@ typedef struct AstElement
 
             struct
             {
-              struct AstElement* childStatements;
               struct AstElement* thisStatement;
+              struct AstElement* childStatements;
             } statements;
 
             struct
@@ -55,7 +55,7 @@ struct AstElement* makeVal(int val);
 struct AstElement* makeId(char *name);
 struct AstElement* makeOp(char *symbol);
 
-struct AstElement* makeStatement(struct AstElement* childStatements, struct AstElement* thisStatement);
+struct AstElement* makeStatement(struct AstElement* thistatement, struct AstElement* childStatements);
 struct AstElement* makeExp(struct AstElement* left, struct AstElement* right, struct AstElement* op);
 struct AstElement* makeBoolExp(struct AstElement* left, struct AstElement* relop, struct AstElement* right);
 struct AstElement* makeAssignment(struct AstElement* name, struct AstElement* right);

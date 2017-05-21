@@ -14,7 +14,7 @@ static void* checkAlloc(size_t sz)
     exit(1);
   }
 }
-struct AstElement* makeStatement(struct AstElement* childStatements, struct AstElement* thisStatement)
+struct AstElement* makeStatement(struct AstElement* thisStatement, struct AstElement* childStatements)
 {
 	struct AstElement* result = checkAlloc(sizeof(AstElement));
 	result->kind = ekStatements;

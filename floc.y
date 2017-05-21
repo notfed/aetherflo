@@ -36,7 +36,7 @@ void yyerror(const char* s);
 %left T_PLUS T_MINUS
 %left T_MULTIPLY T_DIVIDE
 
-%type<ast> stmts stmt print assn cond expr term factor boolexpr
+%type<ast> stmts stmt print assn cond expr term factor boolexpr line
 
 %start program
 
@@ -44,14 +44,14 @@ void yyerror(const char* s);
 
 program : stmts        { execute($1); }
 
-stmts   : line stmts   { $$ = $2; }
+stmts   : line stmts   { $$ = makeStatement($1,$2); }
 	| /* e */      { $$ = makeEmpty(); }
         ;
-line    : stmt T_NEWLINE
+line    : stmt T_NEWLINE { $$ = $1; }
 	;
 stmt	: assn 
         | cond
-        | print        
+        | print     
         ;
 print   : T_AMPERSAND expr            { $$ = makePrint($2); }
 	;
