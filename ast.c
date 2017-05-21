@@ -4,10 +4,6 @@
 #include <string.h>
 #include <assert.h>
 
-void execute(struct AstElement* ast)
-{
-	printf("TODO: Execute...\n");
-}
 
 static void* checkAlloc(size_t sz)
 {
