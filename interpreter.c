@@ -17,7 +17,8 @@ void interpret_conditional(AstElement* ast)
 }
 void interpret_assignment(AstElement* ast)
 {
-		printf("Assignment\n");
+		char* name = ast->data.assignment.name->data.name;
+		printf("Assignment to %s\n", name);
 }
 
 void execute(struct AstElement* ast)
