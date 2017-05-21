@@ -95,12 +95,11 @@ int evaluateInt(struct AstElement* ast)
     if(ast->kind == ekVal) {
         return ast->data.val;
     } else if(ast->kind == ekId) {
-        aatree* node = aatree_lookup(symbols,ast->data.name);
-        if(node == NULL) {
+        aatree_item* item = (aatree_item*)(aatree_lookup(symbols,ast->data.name));
+        if(item == NULL) {
             fprintf(stderr, "error: use of undeclared variable '%s'\n", ast->data.name);
             exit(1);
         } 
-        aatree_item* item = (aatree_item*)(node->value);
 	return item->val;
     } else if(ast->kind == ekExpression) {
 
