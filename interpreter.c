@@ -25,24 +25,24 @@ static void* checkAlloc(size_t sz)
   return result;
 }
 
-void interpret_statements(AstElement* ast)
+void execute_statements(AstElement* ast)
 {
         execute(ast->data.statements.thisStatement);
         execute(ast->data.statements.childStatements);
 }
-void interpret_print(AstElement* ast)
+void execute_print(AstElement* ast)
 {
         int result = evaluateExpr(ast->data.print.expr);
         printf("%d\n", result);
 }
-void interpret_conditional(AstElement* ast)
+void execute_conditional(AstElement* ast)
 {
         int result = evaluateExpr(ast->data.conditional.condition);
         if(result) {
             execute(ast->data.conditional.statement);
         }
 }
-void interpret_assignment(AstElement* ast)
+void execute_assignment(AstElement* ast)
 {
 	/* Fix our two operands: name and value */
         char* name = ast->data.assignment.name->data.name;
@@ -65,16 +65,17 @@ void execute(struct AstElement* ast)
 {
     switch(ast->kind) 
     {
-        case ekStatements: interpret_statements(ast); break;
-        case ekPrint: interpret_print(ast); break;
-        case ekAssignment: interpret_assignment(ast); break;
-        case ekConditional: interpret_conditional(ast); break;
+        case ekStatements: execute_statements(ast); break;
+        case ekPrint: execute_print(ast); break;
+        case ekAssignment: execute_assignment(ast); break;
+        case ekConditional: execute_conditional(ast); break;
         case ekEmpty: break;
         default: 
             fprintf(stderr,"error: fatal: attempt to execute unexecutable node %d\n", ast->kind);
             break;
     }
 }
+
 int evaluateExpr(struct AstElement* ast)
 {
     if(ast->kind == ekVal) {
