@@ -32,6 +32,7 @@ int yydebug=1;
 %token<op> T_RELOP
 
 %token T_NEWLINE
+
 %left '+' '-'
 %left '*' '/'
 %nonassoc '<' '>' T_LE T_GE T_EQ T_NE
@@ -81,16 +82,12 @@ factor	: '(' expr ')' { $$ = $2; }
 
 extern int yy_flex_debug;
 int main() {
-        yy_flex_debug = 0;
-	yyin = stdin;
-
-	do { 
-		yyparse();
-	} while(!feof(yyin));
-	return 0;
+    yy_flex_debug = 0;
+    yyparse();
+    return 0;
 }
 
 void yyerror(const char* s) {
-	fprintf(stderr, "error: %s: line %d\n", s, yylineno);
-	exit(1);
+    fprintf(stderr, "error: %s: line %d\n", s, yylineno);
+    exit(1);
 }
