@@ -1,96 +1,92 @@
 #include "ast.h"
+#include "aatree.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
 
-class Expression
-{
-private:
-    Expression *left;
-    Expression *right;
-    Op *op;
-public:
-    Expression(Expression *left, Expression *right, Op* op) {
-        this.left = left;
-        this.right = right;
-        this.op = op;
-    }
-};
+using namespace Ast;
 
-class Statements
+typedef struct aatree_item
 {
-private:
-    Statement *thisStatement;
-    Statements *childStatements;
-public:
-    Statements(Statement *thisStatement, Statements *childStatements) {
-        this.thisStatement = thisStatement;
-        this.childStatements = childStatements;
-    }
-};
-
-class Assignment : Statement
-{
-private:
-    Id *name;
-    Expression *right;
-public:
-    Assignment(Id * name, Expression* right) {
-        this.name = name;
-        this.right = right;
-    }
-};
-
-class Conditional : Statement
-{
-private:
-    Expression *condition;
-    Statement *right;
-public:
-    Conditional(Expression* condition, Statement* right) {
-        this.condition = condition;
-        this.right = right;
-    }
-};
-
-class Print : Statement
-{
-private:
-    Expression *expr;
-public:
-    Print(Expression *expr) {
-        this.expr = expr;
-    }
-};
-
-class Val
-{
-private:
     int val;
-public:
-    Val(int val) {
-        this.val = val;
-    }
-};
+} aatree_item;
 
-class Id
-{
-private:
-    char* name;
-public:
-    Id(char *name) {
-        this.name = strdup(name);
-    }
-};
+static aatree* symbols = NULL;
 
-class Op
+int Val::Evaluate()
 {
-private:
-    char* symbol;
-public:
-    Id(char *name) {
-        this.symbol = strdup(name);
+    return val;
+}
+
+int Id::Evaluate()
+{
+    aatree_item* item = (aatree_item*)(aatree_lookup(symbols,ast->data.name));
+    if(item == NULL) {
+        fprintf(stderr, "error: use of undeclared variable '%s'\n", ast->data.name);
+        exit(1);
+    } 
+    return item->val;
+}
+
+int Expression::Evaluate()
+{
+    if(strcmp(op,"+")==0) {
+        return left->Evaluate()+right->Evaluate();
+    } else if(strcmp(op,"-")==0) {
+        return left->Evaluate()-right->Evaluate();
+    } else if(strcmp(op,"*")==0) {
+        return left->Evaluate()*right->Evaluate();
+    } else if(strcmp(op,"/")==0) {
+        return left->Evaluate()/right->Evaluate();
+    } else if(strcmp(op,"<")==0) {
+        return left->Evaluate()<right->Evaluate();
+    } else if(strcmp(op,"<=")==0) {
+        return left->Evaluate()<=right->Evaluate();
+    } else if(strcmp(op,">")==0) {
+        return left->Evaluate()>right->Evaluate();
+    } else if(strcmp(op,">=")==0) {
+        return left->Evaluate()>=right->Evaluate();
+    } else if(strcmp(op,"==")==0) {
+        return left->Evaluate()==right->Evaluate();
+    } else if(strcmp(op,"!=")==0) {
+        return left->Evaluate()!=right->Evaluate();
+    } else {
+        fprintf(stderr,"fatal error: invalid op '%s'\n", op);
+        exit(1);
     }
-};
+}
+
+void Statements::Execute()
+{
+    this.thisStatement->Execute();
+    this.childStatements->Execute();
+}
+
+void Print::Execute()
+{
+    int result = expr->Evaluate();
+    printf("%d\n", result);
+}
+
+void Conditional::Execute()
+{
+    int result = condition->Evaluate();
+    if(result) {
+        statement->Execute();
+    }
+}
+void Assignment::Execute()
+{
+	/* If variable already exists, update it in-place */
+        aatree_item* item = (aatree_item*)(aatree_lookup(symbols,name));
+        if(item != NULL) {
+	    item->val = val;
+        }
+	/* Otherwise, create variable anew */
+        else {
+            aatree_item* newNode = new aatree_item();
+            newNode->val = val;
+            symbols = aatree_insert(symbols,name,newNode);
+        }
 }

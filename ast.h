@@ -6,7 +6,13 @@
 
 namespace Ast
 {
-    class Val
+    class Evaluatable 
+    {
+    public:
+        virtual int Evaluate() = 0;
+    };
+
+    class Val : Evaluatable
     {
     private:
         int val;
@@ -16,7 +22,7 @@ namespace Ast
         }
     };
     
-    class Id
+    class Id : Evaluatable
     {
     private:
         char* name;
@@ -36,19 +42,18 @@ namespace Ast
         }
     };
 
-    class Expression
+    class Expression : public Evaluatable
     {
     private:
-        Expression *left;
-        Expression *right;
+        Evaluatable *left;
+        Evaluatable *right;
         Op *op;
     public:
-        inline Expression(Expression *left, Expression *right, Op* op) {
+        inline Expression(Evaluatable *left, Evaluatable *right, Op* op) {
             this.left = left;
             this.right = right;
             this.op = op;
         }
-        int Evaluate();
     };
 
     class Statement
@@ -57,7 +62,7 @@ namespace Ast
         virtual void Execute() = 0;
     };
 
-    class Statements
+    class Statements : public Statement
     {
     private:
         Statement *thisStatement;
