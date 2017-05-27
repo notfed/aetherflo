@@ -4,7 +4,7 @@
 #include <string.h>
 #include <assert.h>
 
-namespace Ast
+namespace Interpreter
 {
     class Evaluatable 
     {

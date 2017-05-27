@@ -5,7 +5,7 @@
 #include <string.h>
 #include <assert.h>
 
-using namespace Ast;
+using namespace Interpreter;
 
 typedef struct aatree_item
 {
