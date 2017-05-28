@@ -25,7 +25,7 @@ void aatree_print(aatree *node, int level)
 
 static aatree *aatree_make(const char *key, void *value)
 {
-	aatree *node = malloc(sizeof(aatree));
+	aatree *node = (aatree*)(malloc(sizeof(aatree)));
 	node->key = strdup(key);
 	node->value = value;
 	node->left = node->right = &sentinel;

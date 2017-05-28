@@ -1,9 +1,9 @@
-#include "ast.h"
 #include "aatree.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include "interpreter.h"
 
 using namespace Interpreter;
 
@@ -14,9 +14,41 @@ typedef struct aatree_item
 
 static aatree* symbols = NULL;
 
-int Val::Evaluate()
-{
-    return val;
+Id::Id(char *name) {
+    this->name = strdup(name);
+}
+
+Val::Val(int val) {
+    this->val = val;
+}
+
+Op::Op(char *name) {
+    this->symbol = strdup(symbol);
+}
+
+Statements::Statements(Statement thisStatement, Statements *childStatements) {
+    this->statement = thisStatement;
+    this->childStatements = childStatements;
+}
+
+Expression::Expression(Evaluatable *left, Evaluatable *right, Op* op) {
+    this->left = left;
+    this->right = right;
+    this->op = op;
+}
+
+Assignment::Assignment(Id * name, Expression* right) {
+    this->name = name;
+    this->right = right;
+}
+
+Conditional::Conditional(Expression* condition, Statement* right) {
+    this->condition = condition;
+    this->right = right;
+}
+
+Print::Print(Expression *expr) {
+    this->expr = expr;
 }
 
 int Id::Evaluate()
@@ -27,6 +59,11 @@ int Id::Evaluate()
         exit(1);
     } 
     return item->val;
+}
+
+int Val::Evaluate()
+{
+    return val;
 }
 
 int Expression::Evaluate()
@@ -63,6 +100,10 @@ void Statements::Execute()
     this.childStatements->Execute();
 }
 
+void EmptyStatement::Execute()
+{
+}
+
 void Print::Execute()
 {
     int result = expr->Evaluate();
@@ -78,6 +119,9 @@ void Conditional::Execute()
 }
 void Assignment::Execute()
 {
+        char* name = this->name->Evaluate();
+        int val = this->right->Evaluate();
+
 	/* If variable already exists, update it in-place */
         aatree_item* item = (aatree_item*)(aatree_lookup(symbols,name));
         if(item != NULL) {

@@ -1,3 +1,6 @@
+#ifndef INTERPRETER_H
+#define INTERPRETER_H
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -16,9 +19,7 @@ namespace Interpreter
     private:
         int val;
     public:
-        inline Val(int val) {
-            this.val = val;
-        }
+        Val(int val);
     };
     
     class Id : Evaluatable
@@ -26,9 +27,7 @@ namespace Interpreter
     private:
         char* name;
     public:
-        inline Id(char *name) {
-            this.name = strdup(name);
-        }
+        Id(char *name);
     };
     
     class Op
@@ -36,9 +35,7 @@ namespace Interpreter
     private:
         char* symbol;
     public:
-        inline Id(char *name) {
-            this.symbol = strdup(name);
-        }
+        Op(char *symbol);
     };
 
     class Expression : public Evaluatable
@@ -48,11 +45,7 @@ namespace Interpreter
         Evaluatable *right;
         Op *op;
     public:
-        inline Expression(Evaluatable *left, Evaluatable *right, Op* op) {
-            this.left = left;
-            this.right = right;
-            this.op = op;
-        }
+        Expression(Evaluatable *left, Evaluatable *right, Op* op);
     };
 
     class Statement
@@ -64,13 +57,14 @@ namespace Interpreter
     class Statements : public Statement
     {
     private:
-        Statement *thisStatement;
+        Statement *statement;
         Statements *childStatements;
     public:
-        inline Statements(Statement *thisStatement, Statements *childStatements) {
-            this.thisStatement = thisStatement;
-            this.childStatements = childStatements;
-        }
+        Statements(Statement *statement, Statements *childStatements);
+    };
+
+    class EmptyStatement : public Statement
+    {
     };
     
     class Assignment : public Statement
@@ -79,10 +73,7 @@ namespace Interpreter
         Id *name;
         Expression *right;
     public:
-        inline Assignment(Id * name, Expression* right) {
-            this.name = name;
-            this.right = right;
-        }
+        Assignment(Id * name, Expression* right);
     };
     
     class Conditional : public Statement
@@ -91,10 +82,7 @@ namespace Interpreter
         Expression *condition;
         Statement *right;
     public:
-        inline Conditional(Expression* condition, Statement* right) {
-            this.condition = condition;
-            this.right = right;
-        }
+        Conditional(Expression* condition, Statement* right);
     };
     
     class Print : public Statement
@@ -102,9 +90,8 @@ namespace Interpreter
     private:
         Expression *expr;
     public:
-        inline Print(Expression *expr) {
-            this.expr = expr;
-        }
+        Print(Expression *expr);
     };
-    
 }
+
+#endif

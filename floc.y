@@ -1,6 +1,5 @@
 %{
 
-#include "ast.h"
 #include "interpreter.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -22,7 +21,9 @@ int yydebug=1;
   char* name;
   char* op;
   int val;
-  struct AstElement* ast;
+  Statements* statements_node;
+  Statement* statement_node;
+  Evaluatable* evaluatable_node;
 }
 
 %token<val> T_INT
@@ -37,16 +38,18 @@ int yydebug=1;
 %left '*' '/'
 %nonassoc '<' '>' T_LE T_GE T_EQ T_NE
 
-%type<ast> stmts stmt print assn cond expr factor line
+%type<statements_node> stmts
+%type<statement_node> stmt print assn cond line
+%type<evaluatable_node> expr factor
 
 %start program
 
 %%
 
-program : stmts        { execute($1); }
+program : stmts        { $1->Execute(); }
 
-stmts   : line stmts   { $$ = makeStatement($1,$2); }
-	| /* e */      { $$ = makeEmpty(); }
+stmts   : line stmts   { $$ = new Statements($1,$2); }
+	| /* e */      { $$ = new EmptyStatement(); }
         ;
 line    : stmt T_NEWLINE { $$ = $1; }
 	;
@@ -54,29 +57,29 @@ stmt	: assn
         | cond
         | print     
         ;
-print   : '&' expr       { $$ = makePrint($2); }
+print   : '&' expr       { $$ = new Print($2); }
 	;
-assn    : '{' expr '}' '|' ':' T_ID   { $$ = makeAssignment(makeId($6),$2); }
+assn    : '{' expr '}' '|' ':' T_ID   { $$ = new Assignment(makeId($6),$2); }
 	;
-cond    : '(' expr ')' '?' '?' '(' stmt ')' { $$ = makeConditional($2,$7); }
+cond    : '(' expr ')' '?' '?' '(' stmt ')' { $$ = new Conditional($2,$7); }
 	;
 
-expr    : expr '<' expr { $$ = makeExp($1,$3, makeOp("<")); }
-     	| expr '>' expr { $$ = makeExp($1,$3, makeOp(">")); }
-     	| expr T_EQ expr { $$ = makeExp($1,$3, makeOp("==")); }
-     	| expr T_NE expr { $$ = makeExp($1,$3, makeOp("!=")); }
-     	| expr T_LE expr { $$ = makeExp($1,$3, makeOp("<=")); }
-     	| expr T_GE expr { $$ = makeExp($1,$3, makeOp(">=")); }
-     	| expr '+' expr { $$ = makeExp($1,$3, makeOp("+")); }
-     	| expr '-' expr { $$ = makeExp($1,$3, makeOp("-")); }
-     	| expr '*' expr { $$ = makeExp($1,$3, makeOp("*")); }
-     	| expr '/' expr { $$ = makeExp($1,$3, makeOp("/")); }
+expr    : expr '<' expr { $$ = new Expression($1,$3, new Op("<")); }
+     	| expr '>' expr { $$ = new Expression($1,$3, new Op(">")); }
+     	| expr T_EQ expr { $$ = new Expression($1,$3, new Op("==")); }
+     	| expr T_NE expr { $$ = new Expression($1,$3, new Op("!=")); }
+     	| expr T_LE expr { $$ = new Expression($1,$3, new Op("<=")); }
+     	| expr T_GE expr { $$ = new Expression($1,$3, new Op(">=")); }
+     	| expr '+' expr { $$ = new Expression($1,$3, new Op("+")); }
+     	| expr '-' expr { $$ = new Expression($1,$3, new Op("-")); }
+     	| expr '*' expr { $$ = new Expression($1,$3, new Op("*")); }
+     	| expr '/' expr { $$ = new Expression($1,$3, new Op("/")); }
         | factor
 	;
 
 factor	: '(' expr ')' { $$ = $2; }
-       	| T_INT  { $$ = makeVal($1); }
-       	| T_ID   { $$ = makeId($1); }
+       	| T_INT  { $$ = new Val($1); }
+       	| T_ID   { $$ = new Id($1); }
 	;
 %%
 
