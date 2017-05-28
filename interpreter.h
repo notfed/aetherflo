@@ -1,11 +1,6 @@
 #ifndef INTERPRETER_H
 #define INTERPRETER_H
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <assert.h>
-
 namespace Interpreter
 {
     class Evaluatable 
