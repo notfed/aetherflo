@@ -3,44 +3,49 @@
 
 namespace Interpreter
 {
-    class Evaluatable 
+    class Expression 
     {
     public:
         virtual int Evaluate() = 0;
     };
 
-    class Val : Evaluatable
+    class Val : public Expression
     {
     private:
         int val;
     public:
         Val(int val);
+        virtual int Evaluate();
     };
     
-    class Id : Evaluatable
+    class Id : public Expression
     {
     private:
-        char* name;
+        const char* name;
     public:
-        Id(char *name);
+        Id(const char *name);
+        const char* GetName();
+        virtual int Evaluate();
     };
     
     class Op
     {
     private:
-        char* symbol;
+        friend class ExpressionNode;
+        const char* symbol;
     public:
-        Op(char *symbol);
+        Op(const char *symbol);
     };
 
-    class Expression : public Evaluatable
+    class ExpressionNode : public Expression
     {
     private:
-        Evaluatable *left;
-        Evaluatable *right;
+        Expression *left;
+        Expression *right;
         Op *op;
     public:
-        Expression(Evaluatable *left, Evaluatable *right, Op* op);
+        ExpressionNode(Expression *left, Expression *right, Op* op);
+        virtual int Evaluate();
     };
 
     class Statement
@@ -56,28 +61,27 @@ namespace Interpreter
         Statements *childStatements;
     public:
         Statements(Statement *statement, Statements *childStatements);
+        virtual void Execute();
     };
 
-    class EmptyStatement : public Statement
-    {
-    };
-    
     class Assignment : public Statement
     {
     private:
-        Id *name;
+        Id *id;
         Expression *right;
     public:
-        Assignment(Id * name, Expression* right);
+        Assignment(Id *id, Expression* right);
+        virtual void Execute();
     };
     
     class Conditional : public Statement
     {
     private:
         Expression *condition;
-        Statement *right;
+        Statement *statement;
     public:
-        Conditional(Expression* condition, Statement* right);
+        Conditional(Expression *condition, Statement *statement);
+        virtual void Execute();
     };
     
     class Print : public Statement
@@ -86,6 +90,7 @@ namespace Interpreter
         Expression *expr;
     public:
         Print(Expression *expr);
+        virtual void Execute();
     };
 }
 

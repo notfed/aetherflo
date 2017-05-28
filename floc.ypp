@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+using namespace Interpreter;
+
 extern int yylex();
 extern int yyparse();
 extern FILE* yyin;
@@ -17,13 +19,18 @@ int yydebug=1;
 
 %}
 
+%code requires
+{
+#include "interpreter.h"
+}
+
 %union {
   char* name;
   char* op;
   int val;
-  Statements* statements_node;
-  Statement* statement_node;
-  Evaluatable* evaluatable_node;
+  Interpreter::Statements* statements_node;
+  Interpreter::Statement* statement_node;
+  Interpreter::Expression* expression_node;
 }
 
 %token<val> T_INT
@@ -40,7 +47,7 @@ int yydebug=1;
 
 %type<statements_node> stmts
 %type<statement_node> stmt print assn cond line
-%type<evaluatable_node> expr factor
+%type<expression_node> expr factor
 
 %start program
 
@@ -49,7 +56,7 @@ int yydebug=1;
 program : stmts        { $1->Execute(); }
 
 stmts   : line stmts   { $$ = new Statements($1,$2); }
-	| /* e */      { $$ = new EmptyStatement(); }
+	| /* e */      { $$ = nullptr; }
         ;
 line    : stmt T_NEWLINE { $$ = $1; }
 	;
@@ -59,21 +66,21 @@ stmt	: assn
         ;
 print   : '&' expr       { $$ = new Print($2); }
 	;
-assn    : '{' expr '}' '|' ':' T_ID   { $$ = new Assignment(makeId($6),$2); }
+assn    : '{' expr '}' '|' ':' T_ID   { $$ = new Assignment(new Id($6),$2); }
 	;
 cond    : '(' expr ')' '?' '?' '(' stmt ')' { $$ = new Conditional($2,$7); }
 	;
 
-expr    : expr '<' expr { $$ = new Expression($1,$3, new Op("<")); }
-     	| expr '>' expr { $$ = new Expression($1,$3, new Op(">")); }
-     	| expr T_EQ expr { $$ = new Expression($1,$3, new Op("==")); }
-     	| expr T_NE expr { $$ = new Expression($1,$3, new Op("!=")); }
-     	| expr T_LE expr { $$ = new Expression($1,$3, new Op("<=")); }
-     	| expr T_GE expr { $$ = new Expression($1,$3, new Op(">=")); }
-     	| expr '+' expr { $$ = new Expression($1,$3, new Op("+")); }
-     	| expr '-' expr { $$ = new Expression($1,$3, new Op("-")); }
-     	| expr '*' expr { $$ = new Expression($1,$3, new Op("*")); }
-     	| expr '/' expr { $$ = new Expression($1,$3, new Op("/")); }
+expr    : expr '<' expr { $$ = new ExpressionNode($1,$3, new Op("<")); }
+     	| expr '>' expr { $$ = new ExpressionNode($1,$3, new Op(">")); }
+     	| expr T_EQ expr { $$ = new ExpressionNode($1,$3, new Op("==")); }
+     	| expr T_NE expr { $$ = new ExpressionNode($1,$3, new Op("!=")); }
+     	| expr T_LE expr { $$ = new ExpressionNode($1,$3, new Op("<=")); }
+     	| expr T_GE expr { $$ = new ExpressionNode($1,$3, new Op(">=")); }
+     	| expr '+' expr { $$ = new ExpressionNode($1,$3, new Op("+")); }
+     	| expr '-' expr { $$ = new ExpressionNode($1,$3, new Op("-")); }
+     	| expr '*' expr { $$ = new ExpressionNode($1,$3, new Op("*")); }
+     	| expr '/' expr { $$ = new ExpressionNode($1,$3, new Op("/")); }
         | factor
 	;
 

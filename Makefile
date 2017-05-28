@@ -1,13 +1,13 @@
 all: floc
 
-floc.tab.c floc.tab.h:	floc.y
-	bison -d floc.y
+floc.tab.c floc.tab.hpp:	floc.ypp
+	bison -d floc.ypp
 
-lex.yy.c: floc.l floc.tab.h
-	flex -d floc.l
+lex.yy.c: floc.lpp floc.tab.hpp
+	flex -d floc.lpp
 
-floc: lex.yy.c floc.tab.c floc.tab.h interpreter.cpp interpreter.h aatree.h aatree.c
-	g++ -o floc floc.tab.c lex.yy.c interpreter.cpp aatree.c
+floc: lex.yy.c floc.tab.c floc.tab.hpp interpreter.cpp interpreter.h aatree.h aatree.c
+	g++ -o floc floc.tab.cpp lex.yy.c interpreter.cpp aatree.c
 
 clean:
-	rm floc floc.tab.c lex.yy.c floc.tab.h
+	rm -f floc floc.tab.cpp lex.yy.c floc.tab.hpp
