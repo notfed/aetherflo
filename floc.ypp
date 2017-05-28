@@ -44,7 +44,7 @@ int yydebug=1;
 %nonassoc '<' '>' T_LE T_GE T_EQ T_NE
 
 %type<statements_node> stmts
-%type<statement_node> stmt print assn cond line
+%type<statement_node> stmt print assn cond
 %type<expression_node> expr factor
 
 %start program
@@ -53,11 +53,9 @@ int yydebug=1;
 
 program : stmts        { $1->Execute(); }
 
-stmts   : line stmts   { $$ = new Statements($1,$2); }
-	| /* e */      { $$ = nullptr; }
+stmts   : stmt T_NEWLINE stmts   { $$ = new Statements($1,$3); }
+	| /* e */                { $$ = nullptr; }
         ;
-line    : stmt T_NEWLINE { $$ = $1; }
-	;
 stmt	: assn 
         | cond
         | print     
