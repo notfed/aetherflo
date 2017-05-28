@@ -1,4 +1,4 @@
-#include "aatree.h"
+#include <unordered_map>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -7,12 +7,7 @@
 
 using namespace Interpreter;
 
-typedef struct aatree_item
-{
-    int val;
-} aatree_item;
-
-static aatree* symbols = NULL;
+static std::unordered_map<std::string, int> symbols;
 
 Id::Id(const char *name) {
     this->name = strdup(name);
@@ -59,12 +54,15 @@ int Id::Evaluate()
 {
     const char* name = this->name;
     
-    aatree_item* item = (aatree_item*)(aatree_lookup(symbols,name));
-    if(item == NULL) {
+    try
+    {
+        return symbols.at(name);
+    }
+    catch(std::out_of_range e)
+    {
         fprintf(stderr, "error: use of undeclared variable '%s'\n", name);
         exit(1);
-    } 
-    return item->val;
+    }
 }
 
 int Val::Evaluate()
@@ -134,16 +132,5 @@ void Assignment::Execute()
 {
     const char* name = this->id->GetName();
     int val = this->right->Evaluate();
-
-    /* If variable already exists, update it in-place */
-    aatree_item* item = (aatree_item*)(aatree_lookup(symbols,name));
-    if(item != NULL) {
-        item->val = val;
-    }
-    /* Otherwise, create variable anew */
-    else {
-        aatree_item* newNode = new aatree_item();
-        newNode->val = val;
-        symbols = aatree_insert(symbols,name,newNode);
-    }
+    symbols[name] = val;
 }
