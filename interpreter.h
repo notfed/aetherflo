@@ -24,8 +24,8 @@ namespace Interpreter
         const char* name;
     public:
         Id(const char *name);
-        const char* GetName();
         virtual int Evaluate();
+        void Assign(int val);
     };
     
     class Op

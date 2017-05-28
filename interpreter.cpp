@@ -13,43 +13,6 @@ Id::Id(const char *name) {
     this->name = strdup(name);
 }
 
-const char* Id::GetName() {
-    return this->name;
-}
-
-Val::Val(int val) {
-    this->val = val;
-}
-
-Op::Op(const char *symbol) {
-    this->symbol = strdup(symbol);
-}
-
-Statements::Statements(Statement *statement, Statements *childStatements) {
-    this->statement = statement;
-    this->childStatements = childStatements;
-}
-
-ExpressionNode::ExpressionNode(Expression *left, Expression *right, Op* op) {
-    this->left = left;
-    this->right = right;
-    this->op = op;
-}
-
-Assignment::Assignment(Id *id, Expression* right) {
-    this->id= id;
-    this->right = right;
-}
-
-Conditional::Conditional(Expression* condition, Statement* statement) {
-    this->condition = condition;
-    this->statement = statement;
-}
-
-Print::Print(Expression *expr) {
-    this->expr = expr;
-}
-
 int Id::Evaluate()
 {
     const char* name = this->name;
@@ -65,9 +28,77 @@ int Id::Evaluate()
     }
 }
 
+void Id::Assign(int val) {
+    symbols[this->name] = val;
+}
+
+Val::Val(int val) {
+    this->val = val;
+}
+
 int Val::Evaluate()
 {
     return this->val;
+}
+
+Op::Op(const char *symbol) {
+    this->symbol = strdup(symbol);
+}
+
+Statements::Statements(Statement *statement, Statements *childStatements) {
+    this->statement = statement;
+    this->childStatements = childStatements;
+}
+
+void Statements::Execute()
+{
+    if(this->statement != nullptr)
+    {
+        this->statement->Execute();
+    }
+    if(this->childStatements != nullptr)
+    {
+        this->childStatements->Execute();
+    }
+}
+
+Assignment::Assignment(Id *id, Expression* right) {
+    this->id= id;
+    this->right = right;
+}
+
+void Assignment::Execute() {
+    int val = this->right->Evaluate();
+    this->id->Assign(val);
+}
+
+Conditional::Conditional(Expression* condition, Statement* statement) {
+    this->condition = condition;
+    this->statement = statement;
+}
+
+void Conditional::Execute()
+{
+    int result = this->condition->Evaluate();
+    if(result) {
+        this->statement->Execute();
+    }
+}
+
+Print::Print(Expression *expr) {
+    this->expr = expr;
+}
+
+void Print::Execute()
+{
+    int result = this->expr->Evaluate();
+    printf("%d\n", result);
+}
+
+ExpressionNode::ExpressionNode(Expression *left, Expression *right, Op* op) {
+    this->left = left;
+    this->right = right;
+    this->op = op;
 }
 
 int ExpressionNode::Evaluate()
@@ -100,37 +131,4 @@ int ExpressionNode::Evaluate()
         fprintf(stderr,"fatal error: invalid op '%s'\n", op);
         exit(1);
     }
-}
-
-void Statements::Execute()
-{
-    if(this->statement != nullptr)
-    {
-        this->statement->Execute();
-    }
-    if(this->childStatements != nullptr)
-    {
-        this->childStatements->Execute();
-    }
-}
-
-
-void Print::Execute()
-{
-    int result = this->expr->Evaluate();
-    printf("%d\n", result);
-}
-
-void Conditional::Execute()
-{
-    int result = this->condition->Evaluate();
-    if(result) {
-        this->statement->Execute();
-    }
-}
-void Assignment::Execute()
-{
-    const char* name = this->id->GetName();
-    int val = this->right->Evaluate();
-    symbols[name] = val;
 }
