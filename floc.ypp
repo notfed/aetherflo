@@ -15,8 +15,6 @@ void yyerror(const char* s);
 
 int yydebug=1;
 
-#define YYPARSE_PARAM astDest
-
 %}
 
 %code requires
