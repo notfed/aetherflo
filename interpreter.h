@@ -20,6 +20,8 @@ namespace Interpreter
     
     class Id : public Expression
     {
+        friend class FunctionAssignment;
+        friend class FunctionCall;
     private:
         const char* name;
     public:
@@ -90,6 +92,25 @@ namespace Interpreter
         Expression *expr;
     public:
         Print(Expression *expr);
+        virtual void Execute();
+    };
+
+    class FunctionAssignment : public Statement
+    {
+    private:
+        Id *id;
+        Statements *statements;
+    public:
+        FunctionAssignment(Id *id, Statements *statements);
+        virtual void Execute();
+    };
+
+    class FunctionCall : public Statement
+    {
+    private:
+        Id *id;
+    public:
+        FunctionCall(Id *id);
         virtual void Execute();
     };
 }

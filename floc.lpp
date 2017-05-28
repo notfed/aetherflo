@@ -14,7 +14,7 @@
 
 [ \t]	; // ignore all whitespace
 [0-9]+		{ yylval.val = atoi(yytext); return T_INT;}
-\n		{return T_NEWLINE;}
+\n+		{return T_NEWLINE;}
 "+"		{return '+';}
 "-"		{return '-';}
 "*"		{return '*';}
@@ -29,10 +29,12 @@
 "&"             {return '&';}
 "<"             {return '<';}
 ">"             {return '>';}
+"="             {return '=';}
 ">="            {return T_GE;}
 "<="            {return T_LE;}
 "=="            {return T_EQ;}
 "!="            {return T_NE;}
-[a-zA-Z]+       { yylval.name = yytext; return T_ID;}
+"def"           {return T_DEF;}
+[a-zA-Z]+       { yylval.name = strdup(yytext); return T_ID;}
 
 %%

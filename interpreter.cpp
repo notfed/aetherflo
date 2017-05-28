@@ -8,6 +8,7 @@
 using namespace Interpreter;
 
 static std::unordered_map<std::string, int> symbols;
+static std::unordered_map<std::string, Statements*> functions;
 
 Id::Id(const char *name) {
     this->name = strdup(name);
@@ -129,6 +130,35 @@ int ExpressionNode::Evaluate()
         return left!=right;
     } else {
         fprintf(stderr,"fatal error: invalid op '%s'\n", op);
+        exit(1);
+    }
+}
+
+FunctionAssignment::FunctionAssignment(Id *id, Statements *statements)
+{
+    this->id = id;
+    this->statements = statements;
+}
+
+void FunctionAssignment::Execute()
+{
+    functions[this->id->name] = this->statements;
+}
+
+FunctionCall::FunctionCall(Id *id)
+{
+    this->id = id;
+}
+
+void FunctionCall::Execute()
+{
+    try
+    {
+        functions.at(this->id->name)->Execute();
+    }
+    catch(std::out_of_range e)
+    {
+        fprintf(stderr, "error: use of undeclared function '%s'\n", this->id->name);
         exit(1);
     }
 }
