@@ -3,6 +3,7 @@
 
 namespace Interpreter
 {
+
     class Expression 
     {
     public:
@@ -22,6 +23,7 @@ namespace Interpreter
     {
         friend class FunctionAssignment;
         friend class FunctionCall;
+        friend class Symbols::SymbolTable;
     private:
         const char* name;
     public:
