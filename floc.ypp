@@ -3,6 +3,7 @@
 #include "interpreter.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <forward_list>
 
 using namespace Interpreter;
 
@@ -22,6 +23,7 @@ Interpreter::Statements* root;
 %code requires
 {
 #include "interpreter.h"
+#include <forward_list>
 }
 
 %union {
@@ -33,6 +35,8 @@ Interpreter::Statements* root;
   Interpreter::Statements* statements_node;
   Interpreter::Statement* statement_node;
   Interpreter::Expression* expression_node;
+  std::forward_list<Interpreter::FuncCallArgument*>* funccallargument_node;
+  std::forward_list<Interpreter::FuncDefArgument*>* funcdefargument_node;
 }
 
 
@@ -54,6 +58,8 @@ Interpreter::Statements* root;
 %type<statements_node> stmts
 %type<statement_node> stmt print assn cond funcdef funccall
 %type<expression_node> expr factor
+%type<funcdefargument_node> defargs optdefargs
+%type<funccallargument_node> callargs optcallargs
 
 %start program
 
@@ -94,17 +100,21 @@ factor	: '(' expr ')' { $$ = $2; }
        	| number       { $$ = $1; }
        	| id           { $$ = $1; }
 	;
-funcdef : T_DEF id '(' defargs ')' '=' '{' stmts '}' { $$ = new FunctionAssignment($2,$8); } 
+funcdef : T_DEF id '(' optdefargs ')' '=' '{' stmts '}' { $$ = new FunctionAssignment($2,$8); } 
         ;
-funccall : id '(' callargs ')'   { $$ = new FunctionCall($1); }
+funccall : id '(' optcallargs ')'   { $$ = new FunctionCall($1); }
          ;
-defargs : id
-        | id ',' defargs
-        |
+optdefargs : defargs
+           |              { $$ = new std::forward_list<FuncDefArgument*>(); }
+           ;
+optcallargs : callargs
+            |              { $$ = new std::forward_list<FuncCallArgument*>(); }
+            ;
+defargs : id              { $$ = new std::forward_list<FuncDefArgument*>(); $$->push_front(new FuncDefArgument($1)); }
+        | id ',' defargs  { $$->push_front(new FuncDefArgument($1)); }
         ;
-callargs : expr
-         | expr ',' callargs
-         |
+callargs : expr              { $$ = new std::forward_list<FuncCallArgument*>(); $$->push_front(new FuncCallArgument($1)); }
+         | expr ',' callargs { $$->push_front(new FuncCallArgument($1)); }
          ; 
 id      : T_ID     { $$ = new Id($1); }
 number  : T_INT    { $$ = new Val($1); }

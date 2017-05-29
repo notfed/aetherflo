@@ -178,3 +178,13 @@ void FunctionCall::Execute()
         exit(1);
     }
 }
+
+FuncDefArgument::FuncDefArgument(Id* id)
+{
+    this->id = id;
+}
+
+FuncCallArgument::FuncCallArgument(Expression* expression)
+{
+    this->expression = expression;
+}

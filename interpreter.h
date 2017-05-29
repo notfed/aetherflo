@@ -110,10 +110,22 @@ namespace Interpreter
     class FunctionCall : public Statement
     {
     private:
-        Id *id;
+        Id* id;
     public:
         FunctionCall(Id *id);
         virtual void Execute();
+    };
+
+    struct FuncDefArgument
+    {  
+        FuncDefArgument(Id* id);
+        Id* id;
+    };
+
+    struct FuncCallArgument
+    {  
+        FuncCallArgument(Expression* expression);
+        Expression* expression;
     };
 }
 
