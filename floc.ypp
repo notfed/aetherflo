@@ -28,6 +28,8 @@ Interpreter::Statements* root;
   char* name;
   char* op;
   int val;
+  Interpreter::Id* id_node;
+  Interpreter::Val* val_node;
   Interpreter::Statements* statements_node;
   Interpreter::Statement* statement_node;
   Interpreter::Expression* expression_node;
@@ -47,6 +49,8 @@ Interpreter::Statements* root;
 %left '*' '/'
 %nonassoc '<' '>' T_LE T_GE T_EQ T_NE 
 
+%type<id_node> id
+%type<expression_node> number
 %type<statements_node> stmts
 %type<statement_node> stmt print assn cond funcdef funccall
 %type<expression_node> expr factor
@@ -70,7 +74,7 @@ stmt	: assn
         ;
 print   : '&' expr       { $$ = new Print($2); }
 	;
-assn    : '{' expr '}' '|' ':' T_ID   { $$ = new Assignment(new Id($6),$2); }
+assn    : '{' expr '}' '|' ':' id  { $$ = new Assignment($6,$2); }
 	;
 cond    : '(' expr ')' '?' '?' '(' stmts ')' { $$ = new Conditional($2,$7); }
 	;
@@ -87,13 +91,15 @@ expr    : expr '<' expr { $$ = new ExpressionNode($1,$3, new Op("<")); }
         | factor
 	;
 factor	: '(' expr ')' { $$ = $2; }
-       	| T_INT  { $$ = new Val($1); }
-       	| T_ID   { $$ = new Id($1); }
+       	| number       { $$ = $1; }
+       	| id           { $$ = $1; }
 	;
-funcdef : T_DEF T_ID '(' ')' '=' '{' stmts '}' { $$ = new FunctionAssignment(new Id($2),$7); } 
+funcdef : T_DEF id '(' ')' '=' '{' stmts '}' { $$ = new FunctionAssignment($2,$7); } 
         ;
-funccall : T_ID '(' ')'   { $$ = new FunctionCall(new Id($1)); }
+funccall : id '(' ')'   { $$ = new FunctionCall($1); }
          ;
+id      : T_ID     { $$ = new Id($1); }
+number  : T_INT    { $$ = new Val($1); }
 
 %%
 
