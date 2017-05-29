@@ -3,23 +3,23 @@
 #include <string.h>
 #include <assert.h>
 #include "interpreter.h"
+#include "symbols.h"
 
 using namespace Interpreter;
-
-static std::unordered_map<std::string, int> symbols;
-static std::unordered_map<std::string, Statements*> functions;
+using namespace Symbols;
 
 Id::Id(const char *name) {
     this->name = strdup(name);
 }
 
-int Id::Evaluate()
+int Id::Evaluate() // TODO: Allow more than just int
 {
     const char* name = this->name;
-    
     try
     {
-        return symbols.at(name);
+        shared_ptr<Symbol> symbol = global_symbol_table.Get(name);
+        int val = static_cast<SymbolInt*>(symbol.get())->GetVal();
+        return val;
     }
     catch(std::out_of_range e)
     {
@@ -28,8 +28,14 @@ int Id::Evaluate()
     }
 }
 
-void Id::Assign(int val) {
-    symbols[this->name] = val;
+void Id::Assign(int val) { // TODO: Allow more than just int
+    shared_ptr<Symbol> symbol = make_shared<Symbol>(static_cast<Symbol*>(new SymbolInt(this->name, val)));
+    global_symbol_table.Set(this->name, symbol);
+}
+
+const char* Id::GetName()
+{
+    return this->name;
 }
 
 Val::Val(int val) {
@@ -139,7 +145,8 @@ FunctionAssignment::FunctionAssignment(Id *id, Statements *statements)
 
 void FunctionAssignment::Execute()
 {
-    functions[this->id->name] = this->statements;
+    shared_ptr<Symbol> symbol = make_shared<Symbol>(static_cast<Symbol*>(new SymbolProcedure(this->id->name, this->statements)));
+    global_symbol_table.Set(this->id->name, symbol);
 }
 
 FunctionCall::FunctionCall(Id *id)
@@ -151,7 +158,9 @@ void FunctionCall::Execute()
 {
     try
     {
-        functions.at(this->id->name)->Execute();
+        shared_ptr<Symbol> symbol = global_symbol_table.Get(this->id->name);
+        Statement* statement = static_cast<SymbolProcedure*>(symbol.get())->GetVal();
+        statement->Execute();
     }
     catch(std::out_of_range e)
     {

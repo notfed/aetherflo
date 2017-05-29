@@ -6,8 +6,8 @@ floc.tab.c floc.tab.hpp: floc.ypp
 lex.yy.c: floc.lpp floc.tab.hpp
 	flex -d floc.lpp
 
-floc: lex.yy.c floc.tab.c floc.tab.hpp interpreter.cpp interpreter.h
-	g++ -o floc floc.tab.cpp lex.yy.c interpreter.cpp 
+floc: lex.yy.c floc.tab.c floc.tab.hpp interpreter.cpp interpreter.h symbols.cpp symbols.h
+	g++ -O2 -o floc floc.tab.cpp lex.yy.c interpreter.cpp symbols.cpp
 
 clean:
 	rm -f floc floc.tab.cpp lex.yy.c floc.tab.hpp
