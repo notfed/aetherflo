@@ -15,6 +15,8 @@ void yyerror(const char* s);
 
 int yydebug=1;
 
+Interpreter::Statements* root;
+
 %}
 
 %code requires
@@ -30,6 +32,7 @@ int yydebug=1;
   Interpreter::Statement* statement_node;
   Interpreter::Expression* expression_node;
 }
+
 
 %token<val> T_INT
 %token<name> T_ID
@@ -52,7 +55,7 @@ int yydebug=1;
 
 %%
 
-program : stmts        { $1->Execute(); }
+program : stmts        { root = $1; $1->Execute(); }
 
 stmts   : stmt T_NEWLINE stmts   { $$ = new Statements($1,$3); }
 	| stmt                   { $$ = new Statements($1,nullptr); }
