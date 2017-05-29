@@ -7,56 +7,45 @@
 using namespace Symbols;
 using namespace std;
 
-SymbolTable global_symbol_table(nullptr);
+SymbolTable Symbols::global_symbol_table(nullptr);
 
-int SymbolInt::GetVal()
-{
-    return this->val;
-}
-
-string SymbolString::GetVal()
-{
-    return this->val;
-}
-
-Statement* SymbolProcedure::GetVal()
-{
-    return this->procedure;
-}
-
-/*
-void SymbolInt::Visit(SymbolVisitor* visitor)
-{
-    visitor->Visit(this, this->val);
-}
-
-void SymbolString::Visit(SymbolVisitor* visitor)
-{
-    visitor->Visit(this, this->val);
-}
-
-void SymbolProcedure::Visit(SymbolVisitor* visitor)
-{
-    visitor->Visit(this, this->procedure);
-}
-*/
-
-SymbolInt::SymbolInt(string id, int val)
+Symbol::Symbol(string name ,int i)
 {
     this->name = name;
-    this->val = val;
+    this->kind = SymbolInt;
+    this->iVal = i;
 }
-
-SymbolString::SymbolString(string id, const char* val)
+Symbol::Symbol(string name, string s)
 {
     this->name = name;
-    this->val = val;
+    this->kind = SymbolString;
+    this->sVal = s;
 }
-
-SymbolProcedure::SymbolProcedure(string id, Statement* statement)
+Symbol::Symbol(string name, Statement* p)
 {
     this->name = name;
-    this->procedure = statement;
+    this->kind = SymbolProcedure;
+    this->pVal = p;
+}
+string Symbol::GetName()
+{
+    return this->name;
+}
+SymbolKind Symbol::GetKind()
+{
+    return this->kind;
+}
+string Symbol::GetString()
+{
+    return this->sVal;
+}
+int Symbol::GetInt()
+{
+    return this->iVal;
+}
+Statement* Symbol::GetProcedure()
+{
+    return this->pVal;
 }
 
 SymbolTable::SymbolTable(shared_ptr<SymbolTable> parent)

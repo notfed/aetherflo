@@ -12,55 +12,30 @@ using namespace Interpreter;
 namespace Symbols
 {
 
-/*
-    class Symbol;
-
-    class SymbolVisitor
-    {
-    public:
-        virtual void Visit(Symbol* symbol, int val) = 0;
-        virtual void Visit(Symbol* symbol, string& val) = 0;
-        virtual void Visit(Symbol* symbol, Statement* val) = 0;
-    };
-*/
+    enum SymbolKind {SymbolInt,SymbolString,SymbolProcedure};
 
     class Symbol
     {
-    public:
-        //virtual void Visit(SymbolVisitor* visitor) = 0;
-    };
-
-    class SymbolInt : public Symbol
-    {
     private:
         string name;
-        int val;
+        SymbolKind kind;
+        string sVal;
+        union
+        {
+            int iVal;
+            Statement* pVal;
+        };
     public:
-        SymbolInt(string name, int val);
-        //virtual void Visit(SymbolVisitor* visitor);
-        int GetVal();
-    };
+        Symbol(string name, string s);
+        Symbol(string name, int i);
+        Symbol(string name, Statement* p);
 
-    class SymbolString : public Symbol
-    {
-    private:
-        string name;
-        string val;
-    public:
-        SymbolString(string name, const char* val);
-        //virtual void Visit(SymbolVisitor* visitor);
-        string GetVal();
-    };
+        string GetName();
 
-    class SymbolProcedure : public Symbol
-    {
-    private:
-        string name;
-        Statement* procedure;
-    public:
-        SymbolProcedure(string name, Statement* procedure);
-        //virtual void Visit(SymbolVisitor* visitor);
-        Statement* GetVal();
+        SymbolKind GetKind();
+        string GetString();
+        int GetInt();
+        Statement* GetProcedure();
     };
 
     class SymbolTable
