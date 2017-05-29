@@ -19,7 +19,7 @@ int Id::Evaluate() // TODO: Allow more than just int
     const char* name = this->name;
     try
     {
-        shared_ptr<Symbol> symbol = global_symbol_table.Get(name);
+        shared_ptr<Symbol> symbol = current_symbol_table->Get(name);
         if(symbol->GetKind() != SymbolInt)
         {
             fprintf(stderr, "error: variable '%s' was not an int\n", symbol->GetName().c_str());
@@ -37,7 +37,7 @@ int Id::Evaluate() // TODO: Allow more than just int
 
 void Id::Assign(int val) { // TODO: Allow more than just int
     shared_ptr<Symbol> symbol = make_shared<Symbol>(this->name, val);
-    global_symbol_table.Set(this->name, symbol);
+    current_symbol_table->Set(this->name, symbol);
 }
 
 const char* Id::GetName()
@@ -154,7 +154,7 @@ FunctionAssignment::FunctionAssignment(Id *id, forward_list<FuncDefArgument*>* a
 void FunctionAssignment::Execute()
 {
     shared_ptr<Symbol> symbol = make_shared<Symbol>(this->id->name, this->statements);
-    global_symbol_table.Set(this->id->name, symbol);
+    current_symbol_table->Set(this->id->name, symbol);
 }
 
 FunctionCall::FunctionCall(Id *id, forward_list<FuncCallArgument*>* arguments)
@@ -167,7 +167,7 @@ void FunctionCall::Execute()
 {
     try
     {
-        shared_ptr<Symbol> symbol = global_symbol_table.Get(this->id->name);
+        shared_ptr<Symbol> symbol = current_symbol_table->Get(this->id->name);
         if(symbol->GetKind() != SymbolProcedure)
         {
             fprintf(stderr, "error: '%s' was not a procedure\n", symbol->GetName().c_str());
