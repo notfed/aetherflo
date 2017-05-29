@@ -53,13 +53,11 @@ Statements::Statements(Statement *statement, Statements *childStatements) {
 
 void Statements::Execute()
 {
-    if(this->statement != nullptr)
+    Statements *nexts = this;
+    while(nexts != nullptr)
     {
-        this->statement->Execute();
-    }
-    if(this->childStatements != nullptr)
-    {
-        this->childStatements->Execute();
+       nexts->statement->Execute();
+       nexts = nexts->childStatements;
     }
 }
 
