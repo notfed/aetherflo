@@ -9,7 +9,7 @@ using namespace Interpreter;
 using namespace Symbols;
 
 Id::Id(const char *name) {
-    this->name = strdup(name);
+    this->name = name;
 }
 
 int Id::Evaluate() // TODO: Allow more than just int
