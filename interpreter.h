@@ -1,6 +1,8 @@
 #ifndef INTERPRETER_H
 #define INTERPRETER_H
 
+#include <forward_list>
+
 namespace Interpreter
 {
 
@@ -97,25 +99,6 @@ namespace Interpreter
         virtual void Execute();
     };
 
-    class FunctionAssignment : public Statement
-    {
-    private:
-        Id *id;
-        Statements *statements;
-    public:
-        FunctionAssignment(Id *id, Statements *statements);
-        virtual void Execute();
-    };
-
-    class FunctionCall : public Statement
-    {
-    private:
-        Id* id;
-    public:
-        FunctionCall(Id *id);
-        virtual void Execute();
-    };
-
     struct FuncDefArgument
     {  
         FuncDefArgument(Id* id);
@@ -127,6 +110,28 @@ namespace Interpreter
         FuncCallArgument(Expression* expression);
         Expression* expression;
     };
+
+    class FunctionAssignment : public Statement
+    {
+    private:
+        Id *id;
+        std::forward_list<FuncDefArgument*>* arguments;
+        Statements *statements;
+    public:
+        FunctionAssignment(Id *id, std::forward_list<FuncDefArgument*>* arguments, Statements *statements);
+        virtual void Execute();
+    };
+
+    class FunctionCall : public Statement
+    {
+    private:
+        std::forward_list<FuncCallArgument*>* arguments;
+        Id* id;
+    public:
+        FunctionCall(Id *id, std::forward_list<FuncCallArgument*>* arguments);
+        virtual void Execute();
+    };
+
 }
 
 #endif

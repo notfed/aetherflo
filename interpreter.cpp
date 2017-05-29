@@ -4,9 +4,11 @@
 #include <assert.h>
 #include "interpreter.h"
 #include "symbols.h"
+#include <forward_list>
 
 using namespace Interpreter;
 using namespace Symbols;
+using namespace std;
 
 Id::Id(const char *name) {
     this->name = name;
@@ -142,9 +144,10 @@ int ExpressionNode::Evaluate()
     }
 }
 
-FunctionAssignment::FunctionAssignment(Id *id, Statements *statements)
+FunctionAssignment::FunctionAssignment(Id *id, forward_list<FuncDefArgument*>* arguments, Statements *statements)
 {
     this->id = id;
+    this->arguments = arguments;
     this->statements = statements;
 }
 
@@ -154,9 +157,10 @@ void FunctionAssignment::Execute()
     global_symbol_table.Set(this->id->name, symbol);
 }
 
-FunctionCall::FunctionCall(Id *id)
+FunctionCall::FunctionCall(Id *id, forward_list<FuncCallArgument*>* arguments)
 {
     this->id = id;
+    this->arguments = arguments;
 }
 
 void FunctionCall::Execute()
