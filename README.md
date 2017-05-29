@@ -5,6 +5,7 @@ This repository hosts the official interpreter for the aetherflo programming lan
 Aetherflo is a hip new programming language with all of the hot new language trends:
 
 - Variables
+- Procedures
 - Conditional statements
 - Standard output
 
@@ -16,7 +17,8 @@ Aetherflo is a hip new programming language with all of the hot new language tre
 The aetherflo language has the following grammar:
 
     assignment -> { expression } | : id
-    conditional -> ( expression ) ? ? ( statement )
+    procedure -> def id() { statements }
+    conditional -> ( expression ) ? ? ( statements )
     print -> & expression
 
 An `id` refers to a variable name. All variables use global scope.
@@ -27,12 +29,17 @@ Each `expression`  evaluates to an integer.  Standard arithmetic is supported wi
 
 Here is a sample program:
 
-    {5}|:x
-    {7}|:y
-    (x>y)??(&x)
-    (y>=x)??(&y)
+    {1}|:x
+    def incx() = {
+      &x
+      {x+1}|:x
+      (x<=100)??(
+          incx()
+      )
+    }
+    incx()
 
-This outputs `7`.
+This will print the numbers from 1 to 100.
 
 ## About the Interpreter
 
