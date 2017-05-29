@@ -50,6 +50,7 @@ namespace Symbols
     };
 
     extern SymbolTable global_symbol_table;
+    extern SymbolTable* current_symbol_table;
 
 }
 

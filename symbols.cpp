@@ -8,6 +8,7 @@ using namespace Symbols;
 using namespace std;
 
 SymbolTable Symbols::global_symbol_table(nullptr);
+SymbolTable* Symbols::current_symbol_table = &global_symbol_table;
 
 Symbol::Symbol(string name ,int i)
 {
