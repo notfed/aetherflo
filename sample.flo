@@ -1,9 +1,9 @@
-{1}|:x
-def incx() = {
-  &x
-  {x+1}|:x
-  (x<=1000)??(
-      incx()
-  )
+def printseven() = {
+    & 7
 }
-incx()
+def printtwice(x) = {
+    & x
+    & x
+}
+printseven()
+printtwice(5)

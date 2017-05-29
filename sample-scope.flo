@@ -1,0 +1,14 @@
+def outer() = {
+  {1}|:x
+  def inner() = {
+    &x
+    {x+1}|:x
+    (x<=20)??(
+      inner()
+    )
+  }
+  inner()
+}
+{999}|:x
+outer()
+& x
