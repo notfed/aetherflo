@@ -94,10 +94,18 @@ factor	: '(' expr ')' { $$ = $2; }
        	| number       { $$ = $1; }
        	| id           { $$ = $1; }
 	;
-funcdef : T_DEF id '(' ')' '=' '{' stmts '}' { $$ = new FunctionAssignment($2,$7); } 
+funcdef : T_DEF id '(' defargs ')' '=' '{' stmts '}' { $$ = new FunctionAssignment($2,$8); } 
         ;
-funccall : id '(' ')'   { $$ = new FunctionCall($1); }
+funccall : id '(' callargs ')'   { $$ = new FunctionCall($1); }
          ;
+defargs : id
+        | id ',' defargs
+        |
+        ;
+callargs : expr
+         | expr ',' callargs
+         |
+         ; 
 id      : T_ID     { $$ = new Id($1); }
 number  : T_INT    { $$ = new Val($1); }
 
