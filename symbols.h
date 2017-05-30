@@ -53,9 +53,17 @@ namespace Symbols
         void Set(string name, shared_ptr<Symbol> symbol);
     };
 
+    class SymbolTableStateGuard
+    {
+    private:
+        shared_ptr<SymbolTable> prev_symbol_table;
+    public:
+        SymbolTableStateGuard();
+        ~SymbolTableStateGuard();
+    };
+
     extern shared_ptr<SymbolTable> global_symbol_table;
     extern shared_ptr<SymbolTable> current_symbol_table;
-
 }
 
 #endif

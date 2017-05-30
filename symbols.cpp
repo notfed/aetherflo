@@ -16,12 +16,14 @@ Symbol::Symbol(string name ,int i)
     this->kind = SymbolInt;
     this->iVal = i;
 }
+
 Symbol::Symbol(string name, string s)
 {
     this->name = name;
     this->kind = SymbolString;
     this->sVal = s;
 }
+
 Symbol::Symbol(string name, Statement* p, shared_ptr<SymbolTable> closure)
 {
     this->name = name;
@@ -29,22 +31,27 @@ Symbol::Symbol(string name, Statement* p, shared_ptr<SymbolTable> closure)
     this->pVal = p;
     this->closure = closure;
 }
+
 string Symbol::GetName()
 {
     return this->name;
 }
+
 SymbolKind Symbol::GetKind()
 {
     return this->kind;
 }
+
 string Symbol::GetString()
 {
     return this->sVal;
 }
+
 int Symbol::GetInt()
 {
     return this->iVal;
 }
+
 Statement* Symbol::GetProcedure()
 {
     return this->pVal;
@@ -77,4 +84,14 @@ shared_ptr<Symbol> SymbolTable::Get(string name)
 void SymbolTable::Set(string name, shared_ptr<Symbol> symbol)
 {
     this->symbols[name] = symbol;
+}
+
+SymbolTableStateGuard::SymbolTableStateGuard()
+{
+    this->prev_symbol_table = Symbols::current_symbol_table;
+}
+
+SymbolTableStateGuard::~SymbolTableStateGuard()
+{
+    Symbols::current_symbol_table = this->prev_symbol_table;
 }

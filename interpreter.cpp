@@ -176,25 +176,16 @@ void FunctionCall::Execute()
         }
 
         // Backup the current symbol table
-        shared_ptr<SymbolTable> prev_symbol_table(current_symbol_table);
+        SymbolTableStateGuard guard();
 
-        try
-        {
-            // Pull the procedure's closure out and use it
-            current_symbol_table = symbol->closure;
+        // Pull the procedure's closure out and use it
+        current_symbol_table = symbol->closure;
 
-            // TODO: Put arguments into closure
+        // TODO: Put arguments into closure
 
-            // Execute the procedure
-            Statement* statement = symbol.get()->GetProcedure();
-            statement->Execute();
-        }
-        catch(...) // TODO: Use RAII for this?
-        {
-            current_symbol_table = prev_symbol_table;
-            throw;
-        }
-        current_symbol_table = prev_symbol_table;
+        // Execute the procedure
+        Statement* statement = symbol->GetProcedure();
+        statement->Execute();
     }
     catch(std::out_of_range e)
     {
