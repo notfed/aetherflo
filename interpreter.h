@@ -31,10 +31,8 @@ namespace Interpreter
     
     class Op
     {
-    private:
-        friend class ExpressionNode;
-        const char* symbol;
     public:
+        const char* const symbol;
         Op(const char *symbol);
     };
 

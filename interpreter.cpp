@@ -47,8 +47,7 @@ int Val::Evaluate()
     return this->val;
 }
 
-Op::Op(const char *symbol) {
-    this->symbol = strdup(symbol);
+Op::Op(const char *symbol) : symbol(symbol) {
 }
 
 Statements::Statements(Statement *statement, Statements *childStatements) {
