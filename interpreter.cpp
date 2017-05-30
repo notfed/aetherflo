@@ -39,8 +39,7 @@ void Id::Assign(int val) { // TODO: Allow more than just int
     current_symbol_table->Set(this->name, symbol);
 }
 
-Val::Val(int val) {
-    this->val = val;
+Val::Val(int val) : val(val) {
 }
 
 int Val::Evaluate()

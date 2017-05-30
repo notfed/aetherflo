@@ -14,9 +14,8 @@ namespace Interpreter
 
     class Val : public Expression
     {
-    private:
-        int val;
     public:
+        const int val;
         Val(int val);
         virtual int Evaluate();
     };
