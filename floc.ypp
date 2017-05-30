@@ -3,6 +3,7 @@
 #include "interpreter.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <forward_list>
 
 using namespace Interpreter;
@@ -116,7 +117,7 @@ defargs : id              { $$ = new std::forward_list<FuncDefArgument*>(); $$->
 callargs : expr              { $$ = new std::forward_list<FuncCallArgument*>(); $$->push_front(new FuncCallArgument($1)); }
          | expr ',' callargs { $$->push_front(new FuncCallArgument($1)); }
          ; 
-id      : T_ID     { $$ = new Id($1); }
+id      : T_ID     { $$ = new Id(strdup($1)); }
 number  : T_INT    { $$ = new Val($1); }
 
 %%

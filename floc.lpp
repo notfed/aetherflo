@@ -35,6 +35,6 @@
 "=="            {return T_EQ;}
 "!="            {return T_NE;}
 "def"           {return T_DEF;}
-[a-zA-Z]+       { yylval.name = strdup(yytext); return T_ID;}
+[a-zA-Z]+       { yylval.name = yytext; return T_ID;}
 
 %%
