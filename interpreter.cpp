@@ -10,8 +10,7 @@ using namespace Interpreter;
 using namespace Symbols;
 using namespace std;
 
-Id::Id(const char *name) {
-    this->name = name;
+Id::Id(const char *name) : name(name) {
 }
 
 int Id::Evaluate() // TODO: Allow more than just int
@@ -22,7 +21,7 @@ int Id::Evaluate() // TODO: Allow more than just int
         shared_ptr<Symbol> symbol = current_symbol_table->Get(name);
         if(symbol->GetKind() != SymbolInt)
         {
-            fprintf(stderr, "error: variable '%s' was not an int\n", symbol->GetName().c_str());
+            fprintf(stderr, "error: variable '%s' was not an int\n", name);
             exit(1);
         }
         int val = symbol.get()->GetInt();
@@ -38,11 +37,6 @@ int Id::Evaluate() // TODO: Allow more than just int
 void Id::Assign(int val) { // TODO: Allow more than just int
     shared_ptr<Symbol> symbol = make_shared<Symbol>(this->name, val);
     current_symbol_table->Set(this->name, symbol);
-}
-
-const char* Id::GetName()
-{
-    return this->name;
 }
 
 Val::Val(int val) {

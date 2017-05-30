@@ -23,15 +23,11 @@ namespace Interpreter
     
     class Id : public Expression
     {
-        friend class FunctionAssignment;
-        friend class FunctionCall;
-    private:
-        const char* name;
     public:
+        const char* const name;
         Id(const char *name);
         virtual int Evaluate();
         void Assign(int val);
-        const char* GetName();
     };
     
     class Op
