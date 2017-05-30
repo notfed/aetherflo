@@ -7,7 +7,7 @@
 using namespace Symbols;
 using namespace std;
 
-SymbolTable Symbols::global_symbol_table(nullptr);
+SymbolTable Symbols::global_symbol_table;
 SymbolTable* Symbols::current_symbol_table = &global_symbol_table;
 
 Symbol::Symbol(string name ,int i)
@@ -49,31 +49,28 @@ Statement* Symbol::GetProcedure()
     return this->pVal;
 }
 
-SymbolTable::SymbolTable(shared_ptr<SymbolTable> parent)
+SymbolTable::SymbolTable()
 {
-    this->parent = parent;
+}
+
+SymbolTable::SymbolTable(shared_ptr<SymbolTable>& parent) 
+{
+    // TODO: Copy parent.symbol into symbol
 }
 
 shared_ptr<Symbol> SymbolTable::Get(string name)
 {
-    SymbolTable* cur = this;
-    do
-    {
-        auto iter = cur->symbols.find(name);
-        bool found = (iter != cur->symbols.end());
-        if(found) {
-            return iter->second;
-        } else {
-            cur = cur->parent.get();
-        }
+    auto iter = this->symbols.find(name);
+    bool found = (iter != this->symbols.end());
+    if(found) {
+        return iter->second;
+    } else {
+        fprintf(stderr,"error: reference to non-existent symbol '%s'\n", name.c_str());
+        exit(1);
     }
-    while(cur != nullptr);
-
-    fprintf(stderr,"error: reference to non-existent symbol '%s'\n", name.c_str());
-    exit(1);
 }
 
 void SymbolTable::Set(string name, shared_ptr<Symbol> symbol)
 {
     this->symbols[name] = symbol;
-};
+}

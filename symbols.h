@@ -41,10 +41,10 @@ namespace Symbols
     class SymbolTable
     {
     private:
-        shared_ptr<SymbolTable> parent;
         unordered_map<string, shared_ptr<Symbol>> symbols;
     public:
-        SymbolTable(shared_ptr<SymbolTable> parent);
+        SymbolTable();
+        SymbolTable(shared_ptr<SymbolTable>& parent);
         shared_ptr<Symbol> Get(string name);
         void Set(string name, shared_ptr<Symbol> symbol);
     };
