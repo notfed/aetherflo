@@ -44,7 +44,7 @@ namespace Symbols
         unordered_map<string, shared_ptr<Symbol>> symbols;
     public:
         SymbolTable();
-        SymbolTable(shared_ptr<SymbolTable>& parent);
+        SymbolTable(shared_ptr<SymbolTable> parent);
         shared_ptr<Symbol> Get(string name);
         void Set(string name, shared_ptr<Symbol> symbol);
     };

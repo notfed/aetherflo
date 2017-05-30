@@ -53,9 +53,12 @@ SymbolTable::SymbolTable()
 {
 }
 
-SymbolTable::SymbolTable(shared_ptr<SymbolTable>& parent) 
+SymbolTable::SymbolTable(shared_ptr<SymbolTable> parent) 
 {
-    // TODO: Copy parent.symbol into symbol
+    for(auto it : parent->symbols)
+    {
+        symbols[it.first] = it.second;
+    }
 }
 
 shared_ptr<Symbol> SymbolTable::Get(string name)
