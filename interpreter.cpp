@@ -47,7 +47,7 @@ int Val::Evaluate()
     return this->val;
 }
 
-Op::Op(const char *symbol) : symbol(symbol) {
+Op::Op(const char *glyph) : glyph(glyph) {
 }
 
 Statements::Statements(Statement *statement, Statements *childStatements) {
@@ -106,7 +106,7 @@ ExpressionNode::ExpressionNode(Expression *left, Expression *right, Op* op) {
 
 int ExpressionNode::Evaluate()
 {
-    const char* op = this->op->symbol;
+    const char* op = this->op->glyph;
     int left = this->left->Evaluate();
     int right = this->right->Evaluate();
 

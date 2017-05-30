@@ -32,8 +32,8 @@ namespace Interpreter
     class Op
     {
     public:
-        const char* const symbol;
-        Op(const char *symbol);
+        const char* const glyph;
+        Op(const char *glyph);
     };
 
     class ExpressionNode : public Expression
