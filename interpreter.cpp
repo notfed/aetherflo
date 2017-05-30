@@ -18,7 +18,7 @@ int Id::Evaluate() // TODO: Allow more than just int
     const char* name = this->name;
     try
     {
-        shared_ptr<Symbol> symbol = current_symbol_table->Get(name);
+        shared_ptr<Symbol> symbol(current_symbol_table->Get(name));
         if(symbol->GetKind() != SymbolInt)
         {
             fprintf(stderr, "error: variable '%s' was not an int\n", name);
@@ -145,7 +145,13 @@ FunctionAssignment::FunctionAssignment(Id *id, forward_list<FuncDefArgument*>* a
 
 void FunctionAssignment::Execute()
 {
-    shared_ptr<Symbol> symbol = make_shared<Symbol>(this->id->name, this->statements);
+    // Create closure for this procedure definition
+    shared_ptr<SymbolTable> closure(current_symbol_table);
+
+    // Create symbol for procedure
+    shared_ptr<Symbol> symbol = make_shared<Symbol>(this->id->name, this->statements, closure);
+
+    // Place this symbol in the current symbol table
     current_symbol_table->Set(this->id->name, symbol);
 }
 
@@ -159,14 +165,36 @@ void FunctionCall::Execute()
 {
     try
     {
+        // Get desired procedure symbol
         shared_ptr<Symbol> symbol = current_symbol_table->Get(this->id->name);
+
+        // Assert  it's really a procedure
         if(symbol->GetKind() != SymbolProcedure)
         {
             fprintf(stderr, "error: '%s' was not a procedure\n", symbol->GetName().c_str());
             exit(1);
         }
-        Statement* statement = symbol.get()->GetProcedure();
-        statement->Execute();
+
+        // Backup the current symbol table
+        shared_ptr<SymbolTable> prev_symbol_table(current_symbol_table);
+
+        try
+        {
+            // Pull the procedure's closure out and use it
+            current_symbol_table = symbol->closure;
+
+            // TODO: Put arguments into closure
+
+            // Execute the procedure
+            Statement* statement = symbol.get()->GetProcedure();
+            statement->Execute();
+        }
+        catch(...) // TODO: Use RAII for this?
+        {
+            current_symbol_table = prev_symbol_table;
+            throw;
+        }
+        current_symbol_table = prev_symbol_table;
     }
     catch(std::out_of_range e)
     {

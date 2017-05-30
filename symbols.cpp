@@ -7,8 +7,8 @@
 using namespace Symbols;
 using namespace std;
 
-SymbolTable Symbols::global_symbol_table;
-SymbolTable* Symbols::current_symbol_table = &global_symbol_table;
+shared_ptr<SymbolTable> Symbols::global_symbol_table = make_shared<SymbolTable>();
+shared_ptr<SymbolTable> Symbols::current_symbol_table(Symbols::global_symbol_table);
 
 Symbol::Symbol(string name ,int i)
 {
@@ -22,11 +22,12 @@ Symbol::Symbol(string name, string s)
     this->kind = SymbolString;
     this->sVal = s;
 }
-Symbol::Symbol(string name, Statement* p)
+Symbol::Symbol(string name, Statement* p, shared_ptr<SymbolTable> closure)
 {
     this->name = name;
     this->kind = SymbolProcedure;
     this->pVal = p;
+    this->closure = closure;
 }
 string Symbol::GetName()
 {
@@ -53,7 +54,7 @@ SymbolTable::SymbolTable()
 {
 }
 
-SymbolTable::SymbolTable(shared_ptr<SymbolTable> parent) 
+SymbolTable::SymbolTable(SymbolTable* parent) 
 {
     for(auto it : parent->symbols)
     {

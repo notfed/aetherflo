@@ -12,6 +12,8 @@ using namespace Interpreter;
 namespace Symbols
 {
 
+    class SymbolTable;
+
     enum SymbolKind {SymbolInt,SymbolString,SymbolProcedure};
 
     class Symbol
@@ -26,9 +28,11 @@ namespace Symbols
             Statement* pVal;
         };
     public:
+        shared_ptr<SymbolTable> closure; // TODO: Make private
+
         Symbol(string name, string s);
         Symbol(string name, int i);
-        Symbol(string name, Statement* p);
+        Symbol(string name, Statement* p, shared_ptr<SymbolTable> closure);
 
         string GetName();
 
@@ -44,13 +48,13 @@ namespace Symbols
         unordered_map<string, shared_ptr<Symbol>> symbols;
     public:
         SymbolTable();
-        SymbolTable(shared_ptr<SymbolTable> parent);
+        SymbolTable(SymbolTable* parent);
         shared_ptr<Symbol> Get(string name);
         void Set(string name, shared_ptr<Symbol> symbol);
     };
 
-    extern SymbolTable global_symbol_table;
-    extern SymbolTable* current_symbol_table;
+    extern shared_ptr<SymbolTable> global_symbol_table;
+    extern shared_ptr<SymbolTable> current_symbol_table;
 
 }
 
