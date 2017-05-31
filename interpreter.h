@@ -95,13 +95,13 @@ namespace Interpreter
     struct FuncDefArgument
     {  
         FuncDefArgument(Id* id);
-        Id* id;
+        Id* const id;
     };
 
     struct FuncCallArgument
     {  
         FuncCallArgument(Expression* expression);
-        Expression* expression;
+        Expression* const expression;
     };
 
     class FunctionAssignment : public Statement

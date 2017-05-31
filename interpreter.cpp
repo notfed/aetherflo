@@ -50,9 +50,9 @@ int Val::Evaluate()
 Op::Op(const char *glyph) : glyph(glyph) {
 }
 
-Statements::Statements(Statement *statement, Statements *childStatements) {
-    this->statement = statement;
-    this->childStatements = childStatements;
+Statements::Statements(Statement *statement, Statements *childStatements) 
+    : statement(statement), childStatements(childStatements)
+{
 }
 
 void Statements::Execute()
@@ -65,9 +65,7 @@ void Statements::Execute()
     }
 }
 
-Assignment::Assignment(Id *id, Expression* right) {
-    this->id= id;
-    this->right = right;
+Assignment::Assignment(Id *id, Expression* right) : id(id), right(right) {
 }
 
 void Assignment::Execute() {
@@ -75,10 +73,8 @@ void Assignment::Execute() {
     this->id->Assign(val);
 }
 
-Conditional::Conditional(Expression* condition, Statement* statement) {
-    this->condition = condition;
-    this->statement = statement;
-}
+Conditional::Conditional(Expression* condition, Statement* statement) 
+    : condition(condition), statement(statement) { }
 
 void Conditional::Execute()
 {
@@ -88,9 +84,7 @@ void Conditional::Execute()
     }
 }
 
-Print::Print(Expression *expr) {
-    this->expr = expr;
-}
+Print::Print(Expression *expr) : expr(expr) { }
 
 void Print::Execute()
 {
@@ -98,11 +92,8 @@ void Print::Execute()
     printf("%d\n", result);
 }
 
-ExpressionNode::ExpressionNode(Expression *left, Expression *right, Op* op) {
-    this->left = left;
-    this->right = right;
-    this->op = op;
-}
+ExpressionNode::ExpressionNode(Expression *left, Expression *right, Op* op) 
+    : left(left), right(right), op(op) { }
 
 int ExpressionNode::Evaluate()
 {
@@ -137,11 +128,7 @@ int ExpressionNode::Evaluate()
 }
 
 FunctionAssignment::FunctionAssignment(Id *id, forward_list<FuncDefArgument*>* arguments, Statements *statements)
-{
-    this->id = id;
-    this->arguments = arguments;
-    this->statements = statements;
-}
+    : id(id), arguments(arguments), statements(statements) { }
 
 void FunctionAssignment::Execute()
 {
@@ -155,10 +142,8 @@ void FunctionAssignment::Execute()
     current_symbol_table->Set(this->id->name, symbol);
 }
 
-FunctionCall::FunctionCall(Id *id, forward_list<FuncCallArgument*>* arguments)
+FunctionCall::FunctionCall(Id *id, forward_list<FuncCallArgument*>* arguments) : id(id), arguments(arguments)
 {
-    this->id = id;
-    this->arguments = arguments;
 }
 
 void FunctionCall::Execute()
@@ -194,12 +179,10 @@ void FunctionCall::Execute()
     }
 }
 
-FuncDefArgument::FuncDefArgument(Id* id)
+FuncDefArgument::FuncDefArgument(Id* id) : id(id)
 {
-    this->id = id;
 }
 
-FuncCallArgument::FuncCallArgument(Expression* expression)
+FuncCallArgument::FuncCallArgument(Expression* expression) : expression(expression)
 {
-    this->expression = expression;
 }
