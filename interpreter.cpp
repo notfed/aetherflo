@@ -5,6 +5,7 @@
 #include "interpreter.h"
 #include "symbols.h"
 #include <forward_list>
+#include <iostream>
 
 using namespace Interpreter;
 using namespace Symbols;
@@ -57,6 +58,7 @@ Statements::Statements(Statement *statement, Statements *childStatements)
 
 void Statements::Execute()
 {
+    // fprintf(stderr, "Inside statements\n"); // TODO: Debug
     Statements *nexts = this;
     while(nexts != nullptr)
     {
@@ -136,15 +138,30 @@ void FunctionAssignment::Execute()
     shared_ptr<SymbolTable> closure(current_symbol_table);
 
     // Create symbol for procedure
-    shared_ptr<Symbol> symbol = make_shared<Symbol>(this->id->name, this->statements, closure);
+    shared_ptr<Symbol> symbol = make_shared<Symbol>(this->id->name, this, closure);
 
     // Place this symbol in the current symbol table
     current_symbol_table->Set(this->id->name, symbol);
+
+    // fprintf(stderr, "Created function '%s' in closure %d\n", this->id->name, current_symbol_table->sequence); // TODO: Debugging
+
+    // Get desired procedure symbol
+    shared_ptr<Symbol> symbol2 = current_symbol_table->Get(this->id->name);
+
+    // Assert  it's really a procedure (TODO: For debug)
+    if(symbol2->GetKind() != SymbolProcedure)
+    {
+            fprintf(stderr, "error: '%s' failed to save into closure %d)\n", symbol->GetName().c_str(), current_symbol_table->sequence);
+            exit(1);
+    }
 }
 
 FunctionCall::FunctionCall(Id *id, forward_list<FuncCallArgument*>* arguments) : id(id), arguments(arguments)
 {
 }
+
+typedef forward_list<FuncDefArgument*>::iterator fdaIter;
+typedef forward_list<FuncCallArgument*>::iterator fcaIter;
 
 void FunctionCall::Execute()
 {
@@ -156,21 +173,37 @@ void FunctionCall::Execute()
         // Assert  it's really a procedure
         if(symbol->GetKind() != SymbolProcedure)
         {
-            fprintf(stderr, "error: '%s' was not a procedure\n", symbol->GetName().c_str());
+            fprintf(stderr, "error: '%s' was not a procedure (closure %d)\n", symbol->GetName().c_str(), current_symbol_table->sequence);
             exit(1);
         }
 
         // Backup the current symbol table
         SymbolTableStateGuard guard();
 
-        // Pull the procedure's closure out and use it
-        current_symbol_table = symbol->closure;
+        // Pull the procedure's closure
+        shared_ptr<SymbolTable> closure = symbol->closure;
 
-        // TODO: Put arguments into closure
+        // Create a new closure with arguments added
+        shared_ptr<SymbolTable> closureWithArgs = make_shared<SymbolTable>(closure.get());
+
+        // Shove all arguments into this new closureWithArgs
+        /*
+        auto a = this->arguments;
+        auto b = symbol->fVal->arguments;
+        for(pair<fcaIter,fdaIter> i(a->begin(),b->begin()); 
+            i.first !=  a->end() && i.second != b->end();
+            ++i.first, ++i.second)
+        {
+            fprintf(stderr, "created new closure with arg=%s\n", (*i.second)->id->name); // TODO: Just doing this for debugging
+        }
+        */
+
+        current_symbol_table = closureWithArgs;
 
         // Execute the procedure
-        Statement* statement = symbol->GetProcedure();
-        statement->Execute();
+        //fprintf(stderr, "executing procedure '%s'\n", this->id->name); // TODO: Just doing this for debugging
+        FunctionAssignment* assignment = symbol->GetProcedure();
+        assignment->statements->Execute();
     }
     catch(std::out_of_range e)
     {

@@ -7,29 +7,21 @@
 using namespace Symbols;
 using namespace std;
 
+int SymbolTable::last_sequence = 0; // TODO: For debugging
+
 shared_ptr<SymbolTable> Symbols::global_symbol_table = make_shared<SymbolTable>();
 shared_ptr<SymbolTable> Symbols::current_symbol_table(Symbols::global_symbol_table);
 
-Symbol::Symbol(string name ,int i)
+Symbol::Symbol(string name ,int i) : name(name), kind(SymbolInt), iVal(i), fVal(nullptr)
 {
-    this->name = name;
-    this->kind = SymbolInt;
-    this->iVal = i;
 }
 
-Symbol::Symbol(string name, string s)
+Symbol::Symbol(string name, string s) : name(name), kind(SymbolString), sVal(s), fVal(nullptr)
 {
-    this->name = name;
-    this->kind = SymbolString;
-    this->sVal = s;
 }
 
-Symbol::Symbol(string name, Statement* p, shared_ptr<SymbolTable> closure)
+Symbol::Symbol(string name, FunctionAssignment* p, shared_ptr<SymbolTable> closure) : name(name), kind(SymbolProcedure), fVal(p), closure(closure)
 {
-    this->name = name;
-    this->kind = SymbolProcedure;
-    this->pVal = p;
-    this->closure = closure;
 }
 
 string Symbol::GetName()
@@ -52,18 +44,18 @@ int Symbol::GetInt()
     return this->iVal;
 }
 
-Statement* Symbol::GetProcedure()
+FunctionAssignment* Symbol::GetProcedure()
 {
-    return this->pVal;
+    return this->fVal;
 }
 
-SymbolTable::SymbolTable()
+SymbolTable::SymbolTable() : sequence(++last_sequence)
 {
 }
 
-SymbolTable::SymbolTable(SymbolTable* parent) 
+SymbolTable::SymbolTable(SymbolTable* cloneFrom) : sequence(++last_sequence)
 {
-    for(auto it : parent->symbols)
+    for(auto it : cloneFrom->symbols)
     {
         symbols[it.first] = it.second;
     }

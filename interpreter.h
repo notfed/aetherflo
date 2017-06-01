@@ -106,11 +106,11 @@ namespace Interpreter
 
     class FunctionAssignment : public Statement
     {
-    private:
-        Id *id;
-        std::forward_list<FuncDefArgument*>* arguments;
-        Statements *statements;
     public:
+        Id* const id;
+        Statements* const statements;
+        std::forward_list<FuncDefArgument*>* const arguments;
+
         FunctionAssignment(Id *id, std::forward_list<FuncDefArgument*>* arguments, Statements *statements);
         virtual void Execute();
     };

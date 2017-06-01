@@ -25,30 +25,32 @@ namespace Symbols
         union
         {
             int iVal;
-            Statement* pVal;
         };
     public:
         shared_ptr<SymbolTable> closure; // TODO: Make private
+        FunctionAssignment* const fVal;
 
         Symbol(string name, string s);
         Symbol(string name, int i);
-        Symbol(string name, Statement* p, shared_ptr<SymbolTable> closure);
+        Symbol(string name, FunctionAssignment* p, shared_ptr<SymbolTable> closure);
 
         string GetName();
 
         SymbolKind GetKind();
         string GetString();
         int GetInt();
-        Statement* GetProcedure();
+        FunctionAssignment* GetProcedure();
     };
 
     class SymbolTable
     {
     private:
         unordered_map<string, shared_ptr<Symbol>> symbols;
+        static int last_sequence; // TODO: For debugging purposes
     public:
+        const int sequence; // TODO: For debugging purposes
         SymbolTable();
-        SymbolTable(SymbolTable* parent);
+        SymbolTable(SymbolTable* cloneFrom);
         shared_ptr<Symbol> Get(string name);
         void Set(string name, shared_ptr<Symbol> symbol);
     };
