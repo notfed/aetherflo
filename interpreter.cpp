@@ -162,6 +162,8 @@ FunctionCall::FunctionCall(Id *id, forward_list<FuncCallArgument*>* arguments) :
 
 typedef forward_list<FuncDefArgument*>::iterator fdaIter;
 typedef forward_list<FuncCallArgument*>::iterator fcaIter;
+typedef forward_list<FuncDefArgument*> fda;
+typedef forward_list<FuncCallArgument*> fca;
 
 void FunctionCall::Execute()
 {
@@ -177,6 +179,23 @@ void FunctionCall::Execute()
             exit(1);
         }
 
+        // Create a list with all all FCD and FCA mappings
+        forward_list<shared_ptr<pair<fca,fda>>> argList;
+        /* TODO: Need Object class before this will work
+        auto a = this->arguments;
+        auto b = symbol->fVal->arguments;
+        for(pair<fcaIter,fdaIter> i(a->begin(),b->begin()); 
+            i.first !=  a->end() && i.second != b->end();
+            ++i.first, ++i.second)
+        {
+            fprintf(stderr, "created new closure with arg=%s\n", (*i.second)->id->name); // TODO: Just doing this for debugging
+            string argName = (*i.second)->id->name;
+            shared_ptr<Symbol> argValue = make_shared<Symbol>(argName, (*i.first)->expression->Evaluate()); // TODO: Need to do this before entering closure!!!!!
+            // ^ TODO:
+            argList.push_front(make_shared<pair<fca,fda>>(argName,argValue));
+        }
+        */
+
         // Backup the current symbol table
         SymbolTableStateGuard guard();
 
@@ -186,18 +205,15 @@ void FunctionCall::Execute()
         // Create a new closure with arguments added
         shared_ptr<SymbolTable> closureWithArgs = make_shared<SymbolTable>(closure.get());
 
-        // Shove all arguments into this new closureWithArgs
-        auto a = this->arguments;
-        auto b = symbol->fVal->arguments;
-        for(pair<fcaIter,fdaIter> i(a->begin(),b->begin()); 
-            i.first !=  a->end() && i.second != b->end();
-            ++i.first, ++i.second)
+        // Pull out the FCA and FDA mappings and put them in the closure
+        /* TODO: Need Objects before this will work 
+        for(shared_ptr<pair<fca,fda>> argNameAndValue : argList)
         {
-            fprintf(stderr, "created new closure with arg=%s\n", (*i.second)->id->name); // TODO: Just doing this for debugging
-            auto argName = (*i.second)->id->name;
-            auto argValue = make_shared<Symbol>(argName, (*i.first)->expression->Evaluate()); // TODO: Need to do this before entering closure!!!!!
+            string argName = argNameAndValue->second;
+            int argValue = argNameAndValue->first;
             closureWithArgs->Set(argName, argValue); 
         }
+        */
 
         current_symbol_table = closureWithArgs;
 

@@ -16,16 +16,17 @@ namespace Symbols
 
     enum SymbolKind {SymbolInt,SymbolString,SymbolProcedure};
 
+    class Object
+    {
+    };
+
     class Symbol
     {
     private:
         string name;
         SymbolKind kind;
         string sVal;
-        union
-        {
-            int iVal;
-        };
+        int iVal;
     public:
         shared_ptr<SymbolTable> closure; // TODO: Make private
         FunctionAssignment* const fVal;
