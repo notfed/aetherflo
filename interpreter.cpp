@@ -187,7 +187,6 @@ void FunctionCall::Execute()
         shared_ptr<SymbolTable> closureWithArgs = make_shared<SymbolTable>(closure.get());
 
         // Shove all arguments into this new closureWithArgs
-        /*
         auto a = this->arguments;
         auto b = symbol->fVal->arguments;
         for(pair<fcaIter,fdaIter> i(a->begin(),b->begin()); 
@@ -195,8 +194,10 @@ void FunctionCall::Execute()
             ++i.first, ++i.second)
         {
             fprintf(stderr, "created new closure with arg=%s\n", (*i.second)->id->name); // TODO: Just doing this for debugging
+            auto argName = (*i.second)->id->name;
+            auto argValue = make_shared<Symbol>(argName, (*i.first)->expression->Evaluate()); // TODO: Need to do this before entering closure!!!!!
+            closureWithArgs->Set(argName, argValue); 
         }
-        */
 
         current_symbol_table = closureWithArgs;
 
