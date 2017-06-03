@@ -29,7 +29,7 @@ string Symbol::GetName()
     return this->name;
 }
 
-SymbolKind Symbol::GetKind()
+Type Symbol::GetKind()
 {
     return this->kind;
 }

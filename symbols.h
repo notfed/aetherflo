@@ -14,7 +14,7 @@ namespace Symbols
 
     class SymbolTable;
 
-    enum SymbolKind {SymbolInt,SymbolString,SymbolProcedure};
+    enum Type {SymbolInt,SymbolString,SymbolProcedure};
 
     class Object
     {
@@ -24,7 +24,7 @@ namespace Symbols
     {
     private:
         string name;
-        SymbolKind kind;
+        Type kind;
         string sVal;
         int iVal;
     public:
@@ -37,7 +37,7 @@ namespace Symbols
 
         string GetName();
 
-        SymbolKind GetKind();
+        Type GetKind();
         string GetString();
         int GetInt();
         FunctionAssignment* GetProcedure();
