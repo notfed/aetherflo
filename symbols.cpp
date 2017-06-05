@@ -48,9 +48,9 @@ SymbolTable::SymbolTable() : sequence(++last_sequence)
 {
 }
 
-SymbolTable::SymbolTable(SymbolTable* cloneFrom) : sequence(++last_sequence)
+SymbolTable::SymbolTable(const SymbolTable& cloneFrom) : sequence(++last_sequence)
 {
-    symbols = cloneFrom->symbols;
+    symbols = cloneFrom.symbols;
     /* TODO: Deleteme
     for(auto it : cloneFrom->symbols)
     {

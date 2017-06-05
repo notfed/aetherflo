@@ -203,7 +203,7 @@ void FunctionCall::Execute()
         shared_ptr<SymbolTable> closure = object->closure;
 
         // Create a new closure with arguments added
-        shared_ptr<SymbolTable> closureWithArgs = make_shared<SymbolTable>(closure.get());
+        shared_ptr<SymbolTable> closureWithArgs = make_shared<SymbolTable>(*closure.get());
 
         // Pull out the FCA and FDA mappings and put them in the closure
         /* TODO: Need Objects before this will work 

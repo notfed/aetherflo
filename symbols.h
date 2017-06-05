@@ -44,7 +44,7 @@ namespace Symbols
     public:
         const int sequence; // TODO: For debugging purposes
         SymbolTable();
-        SymbolTable(SymbolTable* cloneFrom);
+        SymbolTable(const SymbolTable& cloneFrom);
         shared_ptr<Object> Get(string name);
         void Set(string name, shared_ptr<Object> symbol);
     };
