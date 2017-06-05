@@ -37,7 +37,7 @@ Interpreter::Statements* root;
   Interpreter::Statement* statement_node;
   Interpreter::Expression* expression_node;
   std::forward_list<Interpreter::ProcedureCallArgument*>* funccallargument_node;
-  std::forward_list<Interpreter::FuncDefArgument*>* funcdefargument_node;
+  std::forward_list<Interpreter::Id*>* funcdefargument_node;
 }
 
 
@@ -106,13 +106,13 @@ funcdef : T_DEF id '(' optdefargs ')' '=' '{' stmts '}' { $$ = new ProcedureDecl
 funccall : id '(' optcallargs ')'   { $$ = new ProcedureCall($1,$3); }
          ;
 optdefargs : defargs
-           |              { $$ = new std::forward_list<FuncDefArgument*>(); }
+           |              { $$ = new std::forward_list<Id*>(); }
            ;
 optcallargs : callargs
             |              { $$ = new std::forward_list<ProcedureCallArgument*>(); }
             ;
-defargs : id              { $$ = new std::forward_list<FuncDefArgument*>(); $$->push_front(new FuncDefArgument($1)); }
-        | id ',' defargs  { $$->push_front(new FuncDefArgument($1)); }
+defargs : id              { $$ = new std::forward_list<Id*>(); $$->push_front($1); }
+        | id ',' defargs  { $$->push_front($1); }
         ;
 callargs : expr              { $$ = new std::forward_list<ProcedureCallArgument*>(); $$->push_front(new ProcedureCallArgument($1)); }
          | expr ',' callargs { $$->push_front(new ProcedureCallArgument($1)); }

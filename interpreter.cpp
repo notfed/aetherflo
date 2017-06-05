@@ -129,7 +129,7 @@ int ExpressionNode::Evaluate()
     }
 }
 
-ProcedureDeclaration::ProcedureDeclaration(Id *id, forward_list<FuncDefArgument*>* arguments, Statements *statements)
+ProcedureDeclaration::ProcedureDeclaration(Id *id, forward_list<Id*>* arguments, Statements *statements)
     : id(id), arguments(arguments), statements(statements) { }
 
 void ProcedureDeclaration::Execute()
@@ -160,9 +160,9 @@ ProcedureCall::ProcedureCall(Id *id, forward_list<ProcedureCallArgument*>* argum
 {
 }
 
-typedef forward_list<FuncDefArgument*>::iterator fdaIter;
+typedef forward_list<Id*>::iterator fdaIter;
 typedef forward_list<ProcedureCallArgument*>::iterator fcaIter;
-typedef forward_list<FuncDefArgument*> fda;
+typedef forward_list<Id*> fda;
 typedef forward_list<ProcedureCallArgument*> fca;
 
 void ProcedureCall::Execute()
@@ -227,10 +227,6 @@ void ProcedureCall::Execute()
         fprintf(stderr, "error: use of undeclared function '%s'\n", this->id->name);
         exit(1);
     }
-}
-
-FuncDefArgument::FuncDefArgument(Id* id) : id(id)
-{
 }
 
 ProcedureCallArgument::ProcedureCallArgument(Expression* expression) : expression(expression)
