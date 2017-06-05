@@ -129,10 +129,10 @@ int ExpressionNode::Evaluate()
     }
 }
 
-FunctionAssignment::FunctionAssignment(Id *id, forward_list<FuncDefArgument*>* arguments, Statements *statements)
+ProcedureDeclaration::ProcedureDeclaration(Id *id, forward_list<FuncDefArgument*>* arguments, Statements *statements)
     : id(id), arguments(arguments), statements(statements) { }
 
-void FunctionAssignment::Execute()
+void ProcedureDeclaration::Execute()
 {
     // Create closure for this procedure definition
     shared_ptr<SymbolTable> closure(current_symbol_table);
@@ -219,7 +219,7 @@ void FunctionCall::Execute()
 
         // Execute the procedure
         //fprintf(stderr, "executing procedure '%s'\n", this->id->name); // TODO: Just doing this for debugging
-        FunctionAssignment* assignment = object->GetProcedure();
+        ProcedureDeclaration* assignment = object->GetProcedure();
         assignment->statements->Execute();
     }
     catch(std::out_of_range e)

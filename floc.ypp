@@ -101,7 +101,7 @@ factor	: '(' expr ')' { $$ = $2; }
        	| number       { $$ = $1; }
        	| id           { $$ = $1; }
 	;
-funcdef : T_DEF id '(' optdefargs ')' '=' '{' stmts '}' { $$ = new FunctionAssignment($2,$4,$8); } 
+funcdef : T_DEF id '(' optdefargs ')' '=' '{' stmts '}' { $$ = new ProcedureDeclaration($2,$4,$8); } 
         ;
 funccall : id '(' optcallargs ')'   { $$ = new FunctionCall($1,$3); }
          ;

@@ -24,16 +24,16 @@ namespace Symbols
         int iVal;
     public:
         shared_ptr<SymbolTable> closure; // TODO: Make private
-        FunctionAssignment* const fVal;
+        ProcedureDeclaration* const fVal;
 
         Object(string s);
         Object(int i);
-        Object(FunctionAssignment* p, shared_ptr<SymbolTable> closure);
+        Object(ProcedureDeclaration* p, shared_ptr<SymbolTable> closure);
 
         Type GetKind();
         string GetString();
         int GetInt();
-        FunctionAssignment* GetProcedure();
+        ProcedureDeclaration* GetProcedure();
     };
 
     class SymbolTable

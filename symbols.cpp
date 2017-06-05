@@ -20,7 +20,7 @@ Object::Object(string s) : kind(SymbolString), sVal(s), fVal(nullptr)
 {
 }
 
-Object::Object(FunctionAssignment* p, shared_ptr<SymbolTable> closure) : kind(SymbolProcedure), fVal(p), closure(closure)
+Object::Object(ProcedureDeclaration* p, shared_ptr<SymbolTable> closure) : kind(SymbolProcedure), fVal(p), closure(closure)
 {
 }
 
@@ -39,7 +39,7 @@ int Object::GetInt()
     return this->iVal;
 }
 
-FunctionAssignment* Object::GetProcedure()
+ProcedureDeclaration* Object::GetProcedure()
 {
     return this->fVal;
 }

@@ -104,14 +104,14 @@ namespace Interpreter
         Expression* const expression;
     };
 
-    class FunctionAssignment : public Statement
+    class ProcedureDeclaration : public Statement
     {
     public:
         Id* const id;
         Statements* const statements;
         std::forward_list<FuncDefArgument*>* const arguments;
 
-        FunctionAssignment(Id *id, std::forward_list<FuncDefArgument*>* arguments, Statements *statements);
+        ProcedureDeclaration(Id *id, std::forward_list<FuncDefArgument*>* arguments, Statements *statements);
         virtual void Execute();
     };
 
