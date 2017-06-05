@@ -156,14 +156,14 @@ void ProcedureDeclaration::Execute()
     }
 }
 
-ProcedureCall::ProcedureCall(Id *id, forward_list<FuncCallArgument*>* arguments) : id(id), arguments(arguments)
+ProcedureCall::ProcedureCall(Id *id, forward_list<ProcedureCallArgument*>* arguments) : id(id), arguments(arguments)
 {
 }
 
 typedef forward_list<FuncDefArgument*>::iterator fdaIter;
-typedef forward_list<FuncCallArgument*>::iterator fcaIter;
+typedef forward_list<ProcedureCallArgument*>::iterator fcaIter;
 typedef forward_list<FuncDefArgument*> fda;
-typedef forward_list<FuncCallArgument*> fca;
+typedef forward_list<ProcedureCallArgument*> fca;
 
 void ProcedureCall::Execute()
 {
@@ -233,6 +233,6 @@ FuncDefArgument::FuncDefArgument(Id* id) : id(id)
 {
 }
 
-FuncCallArgument::FuncCallArgument(Expression* expression) : expression(expression)
+ProcedureCallArgument::ProcedureCallArgument(Expression* expression) : expression(expression)
 {
 }

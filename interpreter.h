@@ -98,9 +98,9 @@ namespace Interpreter
         Id* const id;
     };
 
-    struct FuncCallArgument
+    struct ProcedureCallArgument
     {  
-        FuncCallArgument(Expression* expression);
+        ProcedureCallArgument(Expression* expression);
         Expression* const expression;
     };
 
@@ -118,10 +118,10 @@ namespace Interpreter
     class ProcedureCall : public Statement
     {
     private:
-        std::forward_list<FuncCallArgument*>* arguments;
+        std::forward_list<ProcedureCallArgument*>* arguments;
         Id* id;
     public:
-        ProcedureCall(Id *id, std::forward_list<FuncCallArgument*>* arguments);
+        ProcedureCall(Id *id, std::forward_list<ProcedureCallArgument*>* arguments);
         virtual void Execute();
     };
 
