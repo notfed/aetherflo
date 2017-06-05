@@ -18,10 +18,6 @@ namespace Symbols
 
     class Object
     {
-    };
-
-    class Symbol
-    {
     private:
         Type kind;
         string sVal;
@@ -30,9 +26,9 @@ namespace Symbols
         shared_ptr<SymbolTable> closure; // TODO: Make private
         FunctionAssignment* const fVal;
 
-        Symbol(string s);
-        Symbol(int i);
-        Symbol(FunctionAssignment* p, shared_ptr<SymbolTable> closure);
+        Object(string s);
+        Object(int i);
+        Object(FunctionAssignment* p, shared_ptr<SymbolTable> closure);
 
         Type GetKind();
         string GetString();
@@ -43,14 +39,14 @@ namespace Symbols
     class SymbolTable
     {
     private:
-        unordered_map<string, shared_ptr<Symbol>> symbols;
+        unordered_map<string, shared_ptr<Object>> symbols;
         static int last_sequence; // TODO: For debugging purposes
     public:
         const int sequence; // TODO: For debugging purposes
         SymbolTable();
         SymbolTable(SymbolTable* cloneFrom);
-        shared_ptr<Symbol> Get(string name);
-        void Set(string name, shared_ptr<Symbol> symbol);
+        shared_ptr<Object> Get(string name);
+        void Set(string name, shared_ptr<Object> symbol);
     };
 
     class SymbolTableStateGuard

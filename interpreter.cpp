@@ -19,13 +19,13 @@ int Id::Evaluate() // TODO: Allow more than just int
     const char* name = this->name;
     try
     {
-        shared_ptr<Symbol> symbol(current_symbol_table->Get(name));
-        if(symbol->GetKind() != SymbolInt)
+        shared_ptr<Object> object(current_symbol_table->Get(name));
+        if(object->GetKind() != SymbolInt)
         {
             fprintf(stderr, "error: variable '%s' was not an int\n", name);
             exit(1);
         }
-        int val = symbol.get()->GetInt();
+        int val = object.get()->GetInt();
         return val;
     }
     catch(std::out_of_range e)
@@ -36,8 +36,8 @@ int Id::Evaluate() // TODO: Allow more than just int
 }
 
 void Id::Assign(int val) { // TODO: Allow more than just int
-    shared_ptr<Symbol> symbol = make_shared<Symbol>(val);
-    current_symbol_table->Set(this->name, symbol);
+    shared_ptr<Object> object = make_shared<Object>(val);
+    current_symbol_table->Set(this->name, object);
 }
 
 Val::Val(int val) : val(val) {
@@ -137,19 +137,19 @@ void FunctionAssignment::Execute()
     // Create closure for this procedure definition
     shared_ptr<SymbolTable> closure(current_symbol_table);
 
-    // Create symbol for procedure
-    shared_ptr<Symbol> symbol = make_shared<Symbol>(this, closure);
+    // Create object for procedure
+    shared_ptr<Object> object = make_shared<Object>(this, closure);
 
-    // Place this symbol in the current symbol table
-    current_symbol_table->Set(this->id->name, symbol);
+    // Place this object in the current symbol table
+    current_symbol_table->Set(this->id->name, object);
 
     // fprintf(stderr, "Created function '%s' in closure %d\n", this->id->name, current_symbol_table->sequence); // TODO: Debugging
 
-    // Get desired procedure symbol
-    shared_ptr<Symbol> symbol2 = current_symbol_table->Get(this->id->name);
+    // Get desired procedure object
+    shared_ptr<Object> object2 = current_symbol_table->Get(this->id->name);
 
     // Assert  it's really a procedure (TODO: For debug)
-    if(symbol2->GetKind() != SymbolProcedure)
+    if(object2->GetKind() != SymbolProcedure)
     {
             fprintf(stderr, "error: '%s' failed to save into closure %d)\n", this->id->name, current_symbol_table->sequence);
             exit(1);
@@ -169,11 +169,11 @@ void FunctionCall::Execute()
 {
     try
     {
-        // Get desired procedure symbol
-        shared_ptr<Symbol> symbol = current_symbol_table->Get(this->id->name);
+        // Get desired procedure object
+        shared_ptr<Object> object = current_symbol_table->Get(this->id->name);
 
         // Assert  it's really a procedure
-        if(symbol->GetKind() != SymbolProcedure)
+        if(object->GetKind() != SymbolProcedure)
         {
             fprintf(stderr, "error: '%s' was not a procedure (closure %d)\n", this->id->name, current_symbol_table->sequence);
             exit(1);
@@ -183,7 +183,7 @@ void FunctionCall::Execute()
         forward_list<shared_ptr<pair<fca,fda>>> argList;
         /* TODO: Need Object class before this will work
         auto a = this->arguments;
-        auto b = symbol->fVal->arguments;
+        auto b = object->fVal->arguments;
         for(pair<fcaIter,fdaIter> i(a->begin(),b->begin()); 
             i.first !=  a->end() && i.second != b->end();
             ++i.first, ++i.second)
@@ -200,7 +200,7 @@ void FunctionCall::Execute()
         SymbolTableStateGuard guard();
 
         // Pull the procedure's closure
-        shared_ptr<SymbolTable> closure = symbol->closure;
+        shared_ptr<SymbolTable> closure = object->closure;
 
         // Create a new closure with arguments added
         shared_ptr<SymbolTable> closureWithArgs = make_shared<SymbolTable>(closure.get());
@@ -219,7 +219,7 @@ void FunctionCall::Execute()
 
         // Execute the procedure
         //fprintf(stderr, "executing procedure '%s'\n", this->id->name); // TODO: Just doing this for debugging
-        FunctionAssignment* assignment = symbol->GetProcedure();
+        FunctionAssignment* assignment = object->GetProcedure();
         assignment->statements->Execute();
     }
     catch(std::out_of_range e)

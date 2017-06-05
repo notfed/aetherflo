@@ -12,34 +12,34 @@ int SymbolTable::last_sequence = 0; // TODO: For debugging
 shared_ptr<SymbolTable> Symbols::global_symbol_table = make_shared<SymbolTable>();
 shared_ptr<SymbolTable> Symbols::current_symbol_table(Symbols::global_symbol_table);
 
-Symbol::Symbol(int i) : kind(SymbolInt), iVal(i), fVal(nullptr)
+Object::Object(int i) : kind(SymbolInt), iVal(i), fVal(nullptr)
 {
 }
 
-Symbol::Symbol(string s) : kind(SymbolString), sVal(s), fVal(nullptr)
+Object::Object(string s) : kind(SymbolString), sVal(s), fVal(nullptr)
 {
 }
 
-Symbol::Symbol(FunctionAssignment* p, shared_ptr<SymbolTable> closure) : kind(SymbolProcedure), fVal(p), closure(closure)
+Object::Object(FunctionAssignment* p, shared_ptr<SymbolTable> closure) : kind(SymbolProcedure), fVal(p), closure(closure)
 {
 }
 
-Type Symbol::GetKind()
+Type Object::GetKind()
 {
     return this->kind;
 }
 
-string Symbol::GetString()
+string Object::GetString()
 {
     return this->sVal;
 }
 
-int Symbol::GetInt()
+int Object::GetInt()
 {
     return this->iVal;
 }
 
-FunctionAssignment* Symbol::GetProcedure()
+FunctionAssignment* Object::GetProcedure()
 {
     return this->fVal;
 }
@@ -56,7 +56,7 @@ SymbolTable::SymbolTable(SymbolTable* cloneFrom) : sequence(++last_sequence)
     }
 }
 
-shared_ptr<Symbol> SymbolTable::Get(string name)
+shared_ptr<Object> SymbolTable::Get(string name)
 {
     auto iter = this->symbols.find(name);
     bool found = (iter != this->symbols.end());
@@ -68,9 +68,9 @@ shared_ptr<Symbol> SymbolTable::Get(string name)
     }
 }
 
-void SymbolTable::Set(string name, shared_ptr<Symbol> symbol)
+void SymbolTable::Set(string name, shared_ptr<Object> object)
 {
-    this->symbols[name] = symbol;
+    this->symbols[name] = object;
 }
 
 SymbolTableStateGuard::SymbolTableStateGuard()
