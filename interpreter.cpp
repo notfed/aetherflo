@@ -36,7 +36,7 @@ int Id::Evaluate() // TODO: Allow more than just int
 }
 
 void Id::Assign(int val) { // TODO: Allow more than just int
-    shared_ptr<Symbol> symbol = make_shared<Symbol>(this->name, val);
+    shared_ptr<Symbol> symbol = make_shared<Symbol>(val);
     current_symbol_table->Set(this->name, symbol);
 }
 
@@ -138,7 +138,7 @@ void FunctionAssignment::Execute()
     shared_ptr<SymbolTable> closure(current_symbol_table);
 
     // Create symbol for procedure
-    shared_ptr<Symbol> symbol = make_shared<Symbol>(this->id->name, this, closure);
+    shared_ptr<Symbol> symbol = make_shared<Symbol>(this, closure);
 
     // Place this symbol in the current symbol table
     current_symbol_table->Set(this->id->name, symbol);
@@ -151,7 +151,7 @@ void FunctionAssignment::Execute()
     // Assert  it's really a procedure (TODO: For debug)
     if(symbol2->GetKind() != SymbolProcedure)
     {
-            fprintf(stderr, "error: '%s' failed to save into closure %d)\n", symbol->GetName().c_str(), current_symbol_table->sequence);
+            fprintf(stderr, "error: '%s' failed to save into closure %d)\n", this->id->name, current_symbol_table->sequence);
             exit(1);
     }
 }
@@ -175,7 +175,7 @@ void FunctionCall::Execute()
         // Assert  it's really a procedure
         if(symbol->GetKind() != SymbolProcedure)
         {
-            fprintf(stderr, "error: '%s' was not a procedure (closure %d)\n", symbol->GetName().c_str(), current_symbol_table->sequence);
+            fprintf(stderr, "error: '%s' was not a procedure (closure %d)\n", this->id->name, current_symbol_table->sequence);
             exit(1);
         }
 

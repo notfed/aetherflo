@@ -23,7 +23,6 @@ namespace Symbols
     class Symbol
     {
     private:
-        string name;
         Type kind;
         string sVal;
         int iVal;
@@ -31,11 +30,9 @@ namespace Symbols
         shared_ptr<SymbolTable> closure; // TODO: Make private
         FunctionAssignment* const fVal;
 
-        Symbol(string name, string s);
-        Symbol(string name, int i);
-        Symbol(string name, FunctionAssignment* p, shared_ptr<SymbolTable> closure);
-
-        string GetName();
+        Symbol(string s);
+        Symbol(int i);
+        Symbol(FunctionAssignment* p, shared_ptr<SymbolTable> closure);
 
         Type GetKind();
         string GetString();

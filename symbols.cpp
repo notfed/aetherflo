@@ -12,21 +12,16 @@ int SymbolTable::last_sequence = 0; // TODO: For debugging
 shared_ptr<SymbolTable> Symbols::global_symbol_table = make_shared<SymbolTable>();
 shared_ptr<SymbolTable> Symbols::current_symbol_table(Symbols::global_symbol_table);
 
-Symbol::Symbol(string name ,int i) : name(name), kind(SymbolInt), iVal(i), fVal(nullptr)
+Symbol::Symbol(int i) : kind(SymbolInt), iVal(i), fVal(nullptr)
 {
 }
 
-Symbol::Symbol(string name, string s) : name(name), kind(SymbolString), sVal(s), fVal(nullptr)
+Symbol::Symbol(string s) : kind(SymbolString), sVal(s), fVal(nullptr)
 {
 }
 
-Symbol::Symbol(string name, FunctionAssignment* p, shared_ptr<SymbolTable> closure) : name(name), kind(SymbolProcedure), fVal(p), closure(closure)
+Symbol::Symbol(FunctionAssignment* p, shared_ptr<SymbolTable> closure) : kind(SymbolProcedure), fVal(p), closure(closure)
 {
-}
-
-string Symbol::GetName()
-{
-    return this->name;
 }
 
 Type Symbol::GetKind()
