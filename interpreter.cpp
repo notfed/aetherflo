@@ -156,7 +156,7 @@ void ProcedureDeclaration::Execute()
     }
 }
 
-FunctionCall::FunctionCall(Id *id, forward_list<FuncCallArgument*>* arguments) : id(id), arguments(arguments)
+ProcedureCall::ProcedureCall(Id *id, forward_list<FuncCallArgument*>* arguments) : id(id), arguments(arguments)
 {
 }
 
@@ -165,7 +165,7 @@ typedef forward_list<FuncCallArgument*>::iterator fcaIter;
 typedef forward_list<FuncDefArgument*> fda;
 typedef forward_list<FuncCallArgument*> fca;
 
-void FunctionCall::Execute()
+void ProcedureCall::Execute()
 {
     try
     {

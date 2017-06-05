@@ -115,13 +115,13 @@ namespace Interpreter
         virtual void Execute();
     };
 
-    class FunctionCall : public Statement
+    class ProcedureCall : public Statement
     {
     private:
         std::forward_list<FuncCallArgument*>* arguments;
         Id* id;
     public:
-        FunctionCall(Id *id, std::forward_list<FuncCallArgument*>* arguments);
+        ProcedureCall(Id *id, std::forward_list<FuncCallArgument*>* arguments);
         virtual void Execute();
     };
 
