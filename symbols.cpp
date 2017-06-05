@@ -50,10 +50,13 @@ SymbolTable::SymbolTable() : sequence(++last_sequence)
 
 SymbolTable::SymbolTable(SymbolTable* cloneFrom) : sequence(++last_sequence)
 {
+    symbols = cloneFrom->symbols;
+    /* TODO: Deleteme
     for(auto it : cloneFrom->symbols)
     {
         symbols[it.first] = it.second;
     }
+    */
 }
 
 shared_ptr<Object> SymbolTable::Get(string name)
