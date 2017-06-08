@@ -134,15 +134,25 @@ ProcedureDeclaration::ProcedureDeclaration(Id *id, forward_list<Id*>* arguments,
 
 void ProcedureDeclaration::Execute()
 {
-    // Create closure for this procedure definition
-    shared_ptr<SymbolTable> closure(current_symbol_table);
 
-    // Create object for procedure
-    shared_ptr<Object> object = make_shared<Object>(this, closure);
+    // Create object for procedure, with current symbol table as its closure
+    shared_ptr<Object> object = make_shared<Object>(this, current_symbol_table);
 
     // Place this object in the current symbol table
     current_symbol_table->Set(this->id->name, object);
 
+    // Note: The rest is not needed.
+    //  the ProcedureDeclaration closure does not contain arguments or variables
+    //  until it is called:
+
+    // Create closure for this procedure definition
+    // shared_ptr<SymbolTable> closure = make_shared<SymbolTable>(*current_symbol_table);
+
+    // Place this object in the closure
+    //closure->Set(this->id->name, object);
+    
+
+/* TODO: For debugging
     // fprintf(stderr, "Created function '%s' in closure %d\n", this->id->name, current_symbol_table->sequence); // TODO: Debugging
 
     // Get desired procedure object
@@ -154,6 +164,7 @@ void ProcedureDeclaration::Execute()
             fprintf(stderr, "error: '%s' failed to save into closure %d)\n", this->id->name, current_symbol_table->sequence);
             exit(1);
     }
+*/
 }
 
 ProcedureCall::ProcedureCall(Id *id, forward_list<ProcedureCallArgument*>* arguments) : id(id), arguments(arguments)
@@ -169,7 +180,7 @@ void ProcedureCall::Execute()
 {
     try
     {
-        // Get desired procedure object
+        // Get procedure object out of current symbol table
         shared_ptr<Object> object = current_symbol_table->Get(this->id->name);
 
         // Assert  it's really a procedure
