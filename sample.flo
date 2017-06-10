@@ -1,10 +1,10 @@
-def printseven() = {
-    & 7
-    & 7
-}
 def printtwice(x) = {
     & x
     & x
 }
+def printseven() = {
+    & 7
+    & 7
+}
+printtwice(8)
 printseven()
-printtwice(5)

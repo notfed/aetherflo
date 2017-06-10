@@ -40,7 +40,7 @@ namespace Symbols
     class SymbolTable : public gc
     {
     private:
-        unordered_map<string, Object*> symbols;
+        unordered_map<string, Object*> symbols; // TODO: Change to const char*?
         static int last_sequence; // TODO: For debugging purposes
     public:
         const int sequence; // TODO: For debugging purposes

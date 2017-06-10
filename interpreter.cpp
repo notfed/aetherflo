@@ -135,6 +135,11 @@ ProcedureDeclaration::ProcedureDeclaration(Id *id, forward_list<Id*>* arguments,
 
 void ProcedureDeclaration::Execute()
 {
+    int argumentsSize = 0;
+    for(auto iter : *this->arguments) ++argumentsSize;
+
+    fprintf(stderr, "Declaring procedure '%s'(%d args) (closure %d)...\n", this->id->name, argumentsSize, current_symbol_table->sequence); // TODO: Just for debug
+
     // Clone the current symbol table into a closure
     SymbolTable* closure = new SymbolTable(*current_symbol_table);
 
@@ -183,6 +188,8 @@ void ProcedureCall::Execute()
 {
     try
     {
+        fprintf(stderr, "Called procedure '%s' (closure %d)...\n", this->id->name, current_symbol_table->sequence); // TODO: Just for debug
+
         // Get procedure object out of current symbol table
         Object* procedure = current_symbol_table->Get(this->id->name);
 
@@ -197,7 +204,6 @@ void ProcedureCall::Execute()
         SymbolTable* closureWithArgs = new SymbolTable(*procedure->closure);
 
         // Populate the closureWithArgs with arguments
-        fprintf(stderr, "Creating argument closure...\n"); // TODO: Just for debug
         argCallList_t* a = this->arguments;
         argDefList_t* b = procedure->fVal->arguments;
 
@@ -207,7 +213,7 @@ void ProcedureCall::Execute()
         {
             ProcedureCallArgument* callArgument = (*i.first);
             Id* declaredArgument = (*i.second);
-            fprintf(stderr, "adding arg, name='%s'\n", declaredArgument->name); // TODO: Just for debug
+            fprintf(stderr, "  arg='%s'\n", declaredArgument->name); // TODO: Just for debug
             const char *argName = declaredArgument->name;
             Object* argValue = new Object(callArgument->expression->Evaluate());
             closureWithArgs->Set(argName, argValue);
@@ -220,7 +226,7 @@ void ProcedureCall::Execute()
         current_symbol_table = closureWithArgs;
 
         // Execute the procedure
-        fprintf(stderr, "executing procedure '%s'\n", this->id->name); // TODO: Just doing this for debugging
+        fprintf(stderr, "  executing\n"); // TODO: Just doing this for debugging
         ProcedureDeclaration* assignment = procedure->GetProcedure();
         assignment->statements->Execute();
     }
