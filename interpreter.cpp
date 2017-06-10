@@ -135,12 +135,14 @@ ProcedureDeclaration::ProcedureDeclaration(Id *id, forward_list<Id*>* arguments,
 
 void ProcedureDeclaration::Execute()
 {
+    // Clone the current symbol table into a closure
+    SymbolTable* closure = new SymbolTable(*current_symbol_table);
 
-    // Create object for procedure, with current symbol table as its closure
-    Object* object = new Object(this, current_symbol_table);
+    // Create object for procedure, with newly created closure as its closure
+    Object* procedure = new Object(this, closure);
 
     // Place this object in the current symbol table
-    current_symbol_table->Set(this->id->name, object);
+    current_symbol_table->Set(this->id->name, procedure);
 
     // Note: The rest is not needed.
     //  the ProcedureDeclaration closure does not contain arguments or variables
@@ -172,67 +174,54 @@ ProcedureCall::ProcedureCall(Id *id, forward_list<ProcedureCallArgument*>* argum
 {
 }
 
-typedef forward_list<Id*> argDefList;
-typedef forward_list<Id*>::iterator argDefListIter;
-typedef forward_list<ProcedureCallArgument*> argCallList;
-typedef forward_list<ProcedureCallArgument*>::iterator argCallListIter;
+typedef forward_list<Id*> argDefList_t;
+typedef forward_list<Id*>::iterator argDefListIter_t;
+typedef forward_list<ProcedureCallArgument*> argCallList_t;
+typedef forward_list<ProcedureCallArgument*>::iterator argCallListIter_t;
 
 void ProcedureCall::Execute()
 {
     try
     {
         // Get procedure object out of current symbol table
-        Object* object = current_symbol_table->Get(this->id->name);
+        Object* procedure = current_symbol_table->Get(this->id->name);
 
         // Assert  it's really a procedure
-        if(object->GetKind() != SymbolProcedure)
+        if(procedure->GetKind() != SymbolProcedure)
         {
             fprintf(stderr, "error: '%s' was not a procedure (closure %d)\n", this->id->name, current_symbol_table->sequence);
             exit(1);
         }
 
-        // Create a list with all all FCD and FCA mappings
-        forward_list<shared_ptr<pair<argCallList,argDefList>>> argList; // TODO: Wtf?
+        // Clone the procedure's closure, to which we will add arguments
+        SymbolTable* closureWithArgs = new SymbolTable(*procedure->closure);
 
-        /* TODO: Need Object class before this will work
-        auto a = this->arguments;
-        auto b = object->fVal->arguments;
-        for(pair<argCallListIter,argDefListIter> i(a->begin(),b->begin()); 
+        // Populate the closureWithArgs with arguments
+        fprintf(stderr, "Creating argument closure...\n"); // TODO: Just for debug
+        argCallList_t* a = this->arguments;
+        argDefList_t* b = procedure->fVal->arguments;
+
+        for(pair<argCallListIter_t,argDefListIter_t> i(a->begin(),b->begin()); 
             i.first !=  a->end() && i.second != b->end();
             ++i.first, ++i.second)
         {
-            fprintf(stderr, "created new closure with arg=%s\n", (*i.second)->id->name); // TODO: Just doing this for debugging
-            string argName = (*i.second)->id->name;
-            shared_ptr<Symbol> argValue = make_shared<Symbol>(argName, (*i.first)->expression->Evaluate()); // TODO: Need to do this before entering closure!!!!!
-            // ^ TODO:
-            argCallList.push_front(make_shared<pair<argList,argDefList>>(argName,argValue));
+            ProcedureCallArgument* callArgument = (*i.first);
+            Id* declaredArgument = (*i.second);
+            fprintf(stderr, "adding arg, name='%s'\n", declaredArgument->name); // TODO: Just for debug
+            const char *argName = declaredArgument->name;
+            Object* argValue = new Object(callArgument->expression->Evaluate());
+            closureWithArgs->Set(argName, argValue);
         }
-        */
 
         // Backup the current symbol table
         SymbolTableStateGuard guard();
 
-        // Pull the procedure's closure
-        SymbolTable* closure = object->closure;
-
-        // Create a new closure with arguments added
-        SymbolTable* closureWithArgs = new SymbolTable(*closure);
-
-        // Pull out the FCA and FDA mappings and put them in the closure
-        /* TODO: Need Objects before this will work 
-        for(shared_ptr<pair<argCallList,argDefList>> argNameAndValue : argList)
-        {
-            string argName = argNameAndValue->second;
-            int argValue = argNameAndValue->first;
-            closureWithArgs->Set(argName, argValue); 
-        }
-        */
-
+        // Use our new closureWithArgs during our function call
         current_symbol_table = closureWithArgs;
 
         // Execute the procedure
-        //fprintf(stderr, "executing procedure '%s'\n", this->id->name); // TODO: Just doing this for debugging
-        ProcedureDeclaration* assignment = object->GetProcedure();
+        fprintf(stderr, "executing procedure '%s'\n", this->id->name); // TODO: Just doing this for debugging
+        ProcedureDeclaration* assignment = procedure->GetProcedure();
         assignment->statements->Execute();
     }
     catch(std::out_of_range e)
