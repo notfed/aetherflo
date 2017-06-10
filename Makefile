@@ -7,7 +7,7 @@ lex.yy.c: floc.lpp floc.tab.hpp
 	flex -d floc.lpp
 
 floc: lex.yy.c floc.tab.c floc.tab.hpp interpreter.cpp interpreter.h symbols.cpp symbols.h gc/libs/libgc.a gc/libs/libgccpp.a
-	g++ -fmax-errors=1 gc/libs/libgc.a gc/libs/libgccpp.a -g -std=c++11 -o floc floc.tab.cpp lex.yy.c interpreter.cpp symbols.cpp
+	g++ -fmax-errors=1 -std=c++11 -o floc floc.tab.cpp lex.yy.c interpreter.cpp symbols.cpp gc/libs/libgc.a gc/libs/libgccpp.a 
 
 clean:
 	rm -f floc floc.tab.cpp lex.yy.c floc.tab.hpp

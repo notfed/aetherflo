@@ -7,6 +7,7 @@
 #include <forward_list>
 #include <iostream>
 
+
 using namespace Interpreter;
 using namespace Symbols;
 using namespace std;
@@ -19,13 +20,13 @@ int Id::Evaluate() // TODO: Allow more than just int
     const char* name = this->name;
     try
     {
-        shared_ptr<Object> object(current_symbol_table->Get(name));
+        Object* object = current_symbol_table->Get(name);
         if(object->GetKind() != SymbolInt)
         {
             fprintf(stderr, "error: variable '%s' was not an int\n", name);
             exit(1);
         }
-        int val = object.get()->GetInt();
+        int val = object->GetInt();
         return val;
     }
     catch(std::out_of_range e)
@@ -36,7 +37,7 @@ int Id::Evaluate() // TODO: Allow more than just int
 }
 
 void Id::Assign(int val) { // TODO: Allow more than just int
-    shared_ptr<Object> object = make_shared<Object>(val);
+    Object* object = new Object(val);
     current_symbol_table->Set(this->name, object);
 }
 
@@ -136,7 +137,7 @@ void ProcedureDeclaration::Execute()
 {
 
     // Create object for procedure, with current symbol table as its closure
-    shared_ptr<Object> object = make_shared<Object>(this, current_symbol_table);
+    Object* object = new Object(this, current_symbol_table);
 
     // Place this object in the current symbol table
     current_symbol_table->Set(this->id->name, object);
@@ -181,7 +182,7 @@ void ProcedureCall::Execute()
     try
     {
         // Get procedure object out of current symbol table
-        shared_ptr<Object> object = current_symbol_table->Get(this->id->name);
+        Object* object = current_symbol_table->Get(this->id->name);
 
         // Assert  it's really a procedure
         if(object->GetKind() != SymbolProcedure)
@@ -191,7 +192,8 @@ void ProcedureCall::Execute()
         }
 
         // Create a list with all all FCD and FCA mappings
-        forward_list<shared_ptr<pair<fca,fda>>> argList;
+        forward_list<shared_ptr<pair<fca,fda>>> argList; // TODO: Wtf?
+
         /* TODO: Need Object class before this will work
         auto a = this->arguments;
         auto b = object->fVal->arguments;
@@ -211,10 +213,10 @@ void ProcedureCall::Execute()
         SymbolTableStateGuard guard();
 
         // Pull the procedure's closure
-        shared_ptr<SymbolTable> closure = object->closure;
+        SymbolTable* closure = object->closure;
 
         // Create a new closure with arguments added
-        shared_ptr<SymbolTable> closureWithArgs = make_shared<SymbolTable>(*closure.get());
+        SymbolTable* closureWithArgs = new SymbolTable(*closure);
 
         // Pull out the FCA and FDA mappings and put them in the closure
         /* TODO: Need Objects before this will work 

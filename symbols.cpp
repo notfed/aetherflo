@@ -3,14 +3,15 @@
 #include <unordered_map>
 #include <memory>
 #include <string>
+#include "gc/include/gc_cpp.h"
 
 using namespace Symbols;
 using namespace std;
 
 int SymbolTable::last_sequence = 0; // TODO: For debugging
 
-shared_ptr<SymbolTable> Symbols::global_symbol_table = make_shared<SymbolTable>();
-shared_ptr<SymbolTable> Symbols::current_symbol_table(Symbols::global_symbol_table);
+SymbolTable* Symbols::global_symbol_table = new SymbolTable();
+SymbolTable* Symbols::current_symbol_table = Symbols::global_symbol_table;
 
 Object::Object(int i) : kind(SymbolInt), iVal(i), fVal(nullptr)
 {
@@ -20,7 +21,7 @@ Object::Object(string s) : kind(SymbolString), sVal(s), fVal(nullptr)
 {
 }
 
-Object::Object(ProcedureDeclaration* p, shared_ptr<SymbolTable> closure) : kind(SymbolProcedure), fVal(p), closure(closure)
+Object::Object(ProcedureDeclaration* p, SymbolTable* closure) : kind(SymbolProcedure), fVal(p), closure(closure)
 {
 }
 
@@ -59,7 +60,7 @@ SymbolTable::SymbolTable(const SymbolTable& cloneFrom) : sequence(++last_sequenc
     */
 }
 
-shared_ptr<Object> SymbolTable::Get(string name)
+Object* SymbolTable::Get(string name)
 {
     auto iter = this->symbols.find(name);
     bool found = (iter != this->symbols.end());
@@ -71,7 +72,7 @@ shared_ptr<Object> SymbolTable::Get(string name)
     }
 }
 
-void SymbolTable::Set(string name, shared_ptr<Object> object)
+void SymbolTable::Set(string name, Object* object)
 {
     this->symbols[name] = object;
 }
