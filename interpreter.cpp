@@ -172,10 +172,10 @@ ProcedureCall::ProcedureCall(Id *id, forward_list<ProcedureCallArgument*>* argum
 {
 }
 
-typedef forward_list<Id*>::iterator fdaIter;
-typedef forward_list<ProcedureCallArgument*>::iterator fcaIter;
-typedef forward_list<Id*> fda;
-typedef forward_list<ProcedureCallArgument*> fca;
+typedef forward_list<Id*> argDefList;
+typedef forward_list<Id*>::iterator argDefListIter;
+typedef forward_list<ProcedureCallArgument*> argCallList;
+typedef forward_list<ProcedureCallArgument*>::iterator argCallListIter;
 
 void ProcedureCall::Execute()
 {
@@ -192,12 +192,12 @@ void ProcedureCall::Execute()
         }
 
         // Create a list with all all FCD and FCA mappings
-        forward_list<shared_ptr<pair<fca,fda>>> argList; // TODO: Wtf?
+        forward_list<shared_ptr<pair<argCallList,argDefList>>> argList; // TODO: Wtf?
 
         /* TODO: Need Object class before this will work
         auto a = this->arguments;
         auto b = object->fVal->arguments;
-        for(pair<fcaIter,fdaIter> i(a->begin(),b->begin()); 
+        for(pair<argCallListIter,argDefListIter> i(a->begin(),b->begin()); 
             i.first !=  a->end() && i.second != b->end();
             ++i.first, ++i.second)
         {
@@ -205,7 +205,7 @@ void ProcedureCall::Execute()
             string argName = (*i.second)->id->name;
             shared_ptr<Symbol> argValue = make_shared<Symbol>(argName, (*i.first)->expression->Evaluate()); // TODO: Need to do this before entering closure!!!!!
             // ^ TODO:
-            argList.push_front(make_shared<pair<fca,fda>>(argName,argValue));
+            argCallList.push_front(make_shared<pair<argList,argDefList>>(argName,argValue));
         }
         */
 
@@ -220,7 +220,7 @@ void ProcedureCall::Execute()
 
         // Pull out the FCA and FDA mappings and put them in the closure
         /* TODO: Need Objects before this will work 
-        for(shared_ptr<pair<fca,fda>> argNameAndValue : argList)
+        for(shared_ptr<pair<argCallList,argDefList>> argNameAndValue : argList)
         {
             string argName = argNameAndValue->second;
             int argValue = argNameAndValue->first;
