@@ -33,7 +33,10 @@ namespace Symbols
 
         Type GetKind();
         string GetString();
+
         int GetInt();
+        void SetInt(int val);
+
         ProcedureDeclaration* GetProcedure();
     };
 
@@ -47,6 +50,7 @@ namespace Symbols
         SymbolTable();
         SymbolTable(const SymbolTable& cloneFrom);
         Object* Get(string name);
+        bool Contains(const char* name);
         void Set(string name, Object* symbol);
     };
 

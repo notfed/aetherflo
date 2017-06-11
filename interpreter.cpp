@@ -37,8 +37,14 @@ int Id::Evaluate() // TODO: Allow more than just int
 }
 
 void Id::Assign(int val) { // TODO: Allow more than just int
+
     Object* object = new Object(val);
-    current_symbol_table->Set(this->name, object);
+
+    if(current_symbol_table->Contains(this->name)) {
+      current_symbol_table->Get(this->name)->SetInt(val);
+    } else {
+      current_symbol_table->Set(this->name, object);
+    }
 }
 
 Val::Val(int val) : val(val) {
@@ -231,6 +237,7 @@ void ProcedureCall::Execute()
         SymbolTableStateGuard guard;
 
         // Use our new closureWithArgs during our function call
+        fprintf(stderr, "Switching to closure %d\n", closureWithArgs->sequence);
         current_symbol_table = closureWithArgs;
 
         // Execute the procedure

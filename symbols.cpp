@@ -40,6 +40,11 @@ int Object::GetInt()
     return this->iVal;
 }
 
+void Object::SetInt(int val)
+{
+    iVal = val;
+}
+
 ProcedureDeclaration* Object::GetProcedure()
 {
     return this->fVal;
@@ -79,9 +84,15 @@ void SymbolTable::Set(string name, Object* object)
     this->symbols[name] = object;
 }
 
+bool SymbolTable::Contains(const char* name)
+{
+  auto iter = this->symbols.find(name);
+  bool found = (iter != this->symbols.end());
+  return found;
+}
+
 SymbolTableStateGuard::SymbolTableStateGuard()
 {
-    fprintf(stderr, "Switching to closure %d\n", Symbols::current_symbol_table->sequence);
     this->prev_symbol_table = Symbols::current_symbol_table;
 }
 
