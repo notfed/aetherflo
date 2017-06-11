@@ -74,6 +74,7 @@ Assignment::Assignment(Id *id, Expression* right) : id(id), right(right) {
 void Assignment::Execute() {
     int val = this->right->Evaluate();
     this->id->Assign(val);
+    fprintf(stderr, "Assigning %s=%d\n", this->id->name, val);
 }
 
 Conditional::Conditional(Expression* condition, Statement* statement) 
@@ -233,7 +234,7 @@ void ProcedureCall::Execute()
         current_symbol_table = closureWithArgs;
 
         // Execute the procedure
-        fprintf(stderr, "  executing\n"); // TODO: Just doing this for debugging
+        fprintf(stderr, "  executing %s\n", this->id->name); // TODO: Just doing this for debugging
         ProcedureDeclaration* assignment = procedure->GetProcedure();
         assignment->statements->Execute();
     }

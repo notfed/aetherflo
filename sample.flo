@@ -6,5 +6,5 @@ def printseven() = {
     & 7
     & 7
 }
-printtwice(8)
 printseven()
+printtwice(8)

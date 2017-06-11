@@ -1,0 +1,16 @@
+def doseventeen(x) = {
+    {17}|:x
+    & x
+}
+def dothirteen() = {
+    {13}|:x
+    & x
+}
+{7}|:x
+doseventeen()
+dothirteen(8)
+& x
+{77}|:x
+doseventeen()
+dothirteen(8)
+& x

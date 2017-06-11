@@ -1,0 +1,14 @@
+def outerouter(z) = {
+  def outer(y) = {
+    def doloop(x) = {
+        (x>=1)??(
+          & x
+          {x-1}|:x
+          doloop(x)
+        )
+    }
+    doloop(y)
+  }
+  outer(z)
+}
+outerouter(5)
