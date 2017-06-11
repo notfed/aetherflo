@@ -6,7 +6,8 @@
 #include "symbols.h"
 #include <forward_list>
 #include <iostream>
-
+#include <memory>
+#include "log/minlog.h"
 
 using namespace Interpreter;
 using namespace Symbols;
@@ -23,7 +24,7 @@ int Id::Evaluate() // TODO: Allow more than just int
         Object* object = current_symbol_table->Get(name);
         if(object->GetKind() != SymbolInt)
         {
-            fprintf(stderr, "error: variable '%s' was not an int\n", name);
+            minlog::fatal("error: variable '%s' was not an int\n", name);
             exit(1);
         }
         int val = object->GetInt();
@@ -31,7 +32,7 @@ int Id::Evaluate() // TODO: Allow more than just int
     }
     catch(std::out_of_range e)
     {
-        fprintf(stderr, "error: use of undeclared variable '%s'\n", name);
+        minlog::fatal("error: use of undeclared variable '%s'\n", name);
         exit(1);
     }
 }
@@ -65,7 +66,6 @@ Statements::Statements(Statement *statement, Statements *childStatements)
 
 void Statements::Execute()
 {
-    // fprintf(stderr, "Inside statements\n"); // TODO: Debug
     Statements *nexts = this;
     while(nexts != nullptr)
     {
@@ -80,7 +80,8 @@ Assignment::Assignment(Id *id, Expression* right) : id(id), right(right) {
 void Assignment::Execute() {
     int val = this->right->Evaluate();
     this->id->Assign(val);
-    fprintf(stderr, "Assigning %s=%d\n", this->id->name, val);
+    //LOG_F(INFO, "I'm hungry for some %.3f!", 3.14159);
+    minlog::debug("Assigning %s=%d\n", this->id->name, val);
 }
 
 Conditional::Conditional(Expression* condition, Statement* statement) 
@@ -132,7 +133,7 @@ int ExpressionNode::Evaluate()
     } else if(strcmp(op,"!=")==0) {
         return left!=right;
     } else {
-        fprintf(stderr,"fatal error: invalid op '%s'\n", op);
+        minlog::fatal("fatal error: invalid op '%s'\n", op);
         exit(1);
     }
 }
@@ -154,7 +155,7 @@ void ProcedureDeclaration::Execute()
     // Place the procedure in its own closure
     closure->Set(this->id->name, procedure);
 
-    fprintf(stderr, "Declaring procedure '%s'(%d args) (in closure %d with closure %d)...\n", this->id->name, argumentsSize, current_symbol_table->sequence, closure->sequence); // TODO: Just for debug
+    minlog::debug("Declaring procedure '%s'(%d args) (in closure %d with closure %d)...\n", this->id->name, argumentsSize, current_symbol_table->sequence, closure->sequence); // TODO: Just for debug
 
 
     // Place this object in the current symbol table
@@ -199,18 +200,18 @@ void ProcedureCall::Execute()
 {
     try
     {
-        fprintf(stderr, "Fetching procedure '%s' (in closure %d)...\n", this->id->name, current_symbol_table->sequence); // TODO: Just for debug
+        minlog::debug("Fetching procedure '%s' (in closure %d)...\n", this->id->name, current_symbol_table->sequence); // TODO: Just for debug
 
         // Get procedure object out of current symbol table
         Object* procedure = current_symbol_table->Get(this->id->name);
 
-        fprintf(stderr, "Called procedure '%s' (with closure %d)...\n", this->id->name, procedure->closure->sequence); // TODO: Just for debug
+        minlog::debug("Called procedure '%s' (with closure %d)...\n", this->id->name, procedure->closure->sequence); // TODO: Just for debug
 
 
         // Assert  it's really a procedure
         if(procedure->GetKind() != SymbolProcedure)
         {
-            fprintf(stderr, "error: '%s' was not a procedure (closure %d)\n", this->id->name, current_symbol_table->sequence);
+            minlog::debug("error: '%s' was not a procedure (closure %d)\n", this->id->name, current_symbol_table->sequence);
             exit(1);
         }
 
@@ -227,7 +228,7 @@ void ProcedureCall::Execute()
         {
             ProcedureCallArgument* callArgument = (*i.first);
             Id* declaredArgument = (*i.second);
-            fprintf(stderr, "  arg='%s'\n", declaredArgument->name); // TODO: Just for debug
+            minlog::debug("  arg='%s'\n", declaredArgument->name); // TODO: Just for debug
             const char *argName = declaredArgument->name;
             Object* argValue = new Object(callArgument->expression->Evaluate());
             closureWithArgs->Set(argName, argValue);
@@ -237,17 +238,17 @@ void ProcedureCall::Execute()
         SymbolTableStateGuard guard;
 
         // Use our new closureWithArgs during our function call
-        fprintf(stderr, "Switching to closure %d\n", closureWithArgs->sequence);
+        minlog::debug("Switching to closure %d\n", closureWithArgs->sequence);
         current_symbol_table = closureWithArgs;
 
         // Execute the procedure
-        fprintf(stderr, "  executing %s\n", this->id->name); // TODO: Just doing this for debugging
+        minlog::debug("  executing %s\n", this->id->name); // TODO: Just doing this for debugging
         ProcedureDeclaration* assignment = procedure->GetProcedure();
         assignment->statements->Execute();
     }
     catch(std::out_of_range e)
     {
-        fprintf(stderr, "error: use of undeclared function '%s'\n", this->id->name);
+        (stderr, "error: use of undeclared function '%s'\n", this->id->name);
         exit(1);
     }
 }

@@ -4,6 +4,7 @@
 #include <memory>
 #include <string>
 #include "gc/include/gc_cpp.h"
+#include "log/minlog.h"
 
 using namespace Symbols;
 using namespace std;
@@ -58,7 +59,7 @@ SymbolTable::SymbolTable(const SymbolTable& cloneFrom) : sequence(++last_sequenc
 {
 
     this->symbols = cloneFrom.symbols;
-    fprintf(stderr, "Copying closure %d to %d (size %d->%d)\n", cloneFrom.sequence, this->sequence, (int)cloneFrom.symbols.size(), (int)this->symbols.size()); // TODO: Debug
+    minlog::debug("Copying closure %d to %d (size %d->%d)\n", cloneFrom.sequence, this->sequence, (int)cloneFrom.symbols.size(), (int)this->symbols.size()); // TODO: Debug
     /* TODO: Deleteme
     for(auto it : cloneFrom->symbols)
     {
@@ -74,7 +75,7 @@ Object* SymbolTable::Get(string name)
     if(found) {
         return iter->second;
     } else {
-        fprintf(stderr,"error: reference to non-existent symbol '%s'\n", name.c_str());
+        minlog::fatal("error: reference to non-existent symbol '%s'\n", name.c_str());
         exit(1);
     }
 }
@@ -98,6 +99,6 @@ SymbolTableStateGuard::SymbolTableStateGuard()
 
 SymbolTableStateGuard::~SymbolTableStateGuard()
 {
-    fprintf(stderr, "Switching back to closure %d\n", this->prev_symbol_table->sequence);
+    minlog::debug("Switching back to closure %d\n", this->prev_symbol_table->sequence);
     Symbols::current_symbol_table = this->prev_symbol_table;
 }

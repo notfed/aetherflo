@@ -3,7 +3,7 @@ def outer() = {
   def inner() = {
     &x
     {x+1}|:x
-    (x<=20)??(
+    (x<=2000)??(
       inner()
     )
   }
