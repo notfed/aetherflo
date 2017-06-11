@@ -44,9 +44,9 @@ namespace Symbols
     {
     private:
         unordered_map<string, Object*> symbols; // TODO: Change to const char*?
-        static int last_sequence; // TODO: For debugging purposes
+        static int last_sequence;
     public:
-        const int sequence; // TODO: For debugging purposes
+        const int sequence;
         SymbolTable();
         SymbolTable(const SymbolTable& cloneFrom);
         Object* Get(string name);

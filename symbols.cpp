@@ -9,7 +9,7 @@
 using namespace Symbols;
 using namespace std;
 
-int SymbolTable::last_sequence = 0; // TODO: For debugging
+int SymbolTable::last_sequence = 0;
 
 SymbolTable* Symbols::global_symbol_table = new SymbolTable();
 SymbolTable* Symbols::current_symbol_table = Symbols::global_symbol_table;
@@ -59,13 +59,7 @@ SymbolTable::SymbolTable(const SymbolTable& cloneFrom) : sequence(++last_sequenc
 {
 
     this->symbols = cloneFrom.symbols;
-    minlog::debug("Copying closure %d to %d (size %d->%d)\n", cloneFrom.sequence, this->sequence, (int)cloneFrom.symbols.size(), (int)this->symbols.size()); // TODO: Debug
-    /* TODO: Deleteme
-    for(auto it : cloneFrom->symbols)
-    {
-        symbols[it.first] = it.second;
-    }
-    */
+    minlog::debug("Copied closure %d to %d (size %d->%d)\n", cloneFrom.sequence, this->sequence, (int)cloneFrom.symbols.size(), (int)this->symbols.size());
 }
 
 Object* SymbolTable::Get(string name)

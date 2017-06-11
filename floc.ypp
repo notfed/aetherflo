@@ -130,6 +130,6 @@ int main() {
 }
 
 void yyerror(const char* s) {
-    fprintf(stderr, "error: %s: line %d\n", s, yylineno);
+    fprintf(stderr, "syntax error: %s: line %d\n", s, yylineno);
     exit(1);
 }

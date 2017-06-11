@@ -80,7 +80,6 @@ Assignment::Assignment(Id *id, Expression* right) : id(id), right(right) {
 void Assignment::Execute() {
     int val = this->right->Evaluate();
     this->id->Assign(val);
-    //LOG_F(INFO, "I'm hungry for some %.3f!", 3.14159);
     minlog::debug("Assigning %s=%d\n", this->id->name, val);
 }
 
@@ -143,11 +142,13 @@ ProcedureDeclaration::ProcedureDeclaration(Id *id, forward_list<Id*>* arguments,
 
 void ProcedureDeclaration::Execute()
 {
-    int argumentsSize = 0;
-    for(auto iter : *this->arguments) ++argumentsSize;
-
     // Clone the current symbol table into a closure
     SymbolTable* closure = new SymbolTable(*current_symbol_table);
+
+    // Output some debugging information
+    int argumentsSize = 0;
+    for(auto iter : *this->arguments) ++argumentsSize;
+    minlog::debug("Declaring procedure '%s'(%d args) (in closure %d with closure %d)...\n", this->id->name, argumentsSize, current_symbol_table->sequence, closure->sequence);
 
     // Create object for procedure, with newly created closure as its closure
     Object* procedure = new Object(this, closure);
@@ -155,36 +156,8 @@ void ProcedureDeclaration::Execute()
     // Place the procedure in its own closure
     closure->Set(this->id->name, procedure);
 
-    minlog::debug("Declaring procedure '%s'(%d args) (in closure %d with closure %d)...\n", this->id->name, argumentsSize, current_symbol_table->sequence, closure->sequence); // TODO: Just for debug
-
-
     // Place this object in the current symbol table
     current_symbol_table->Set(this->id->name, procedure);
-
-    // Note: The rest is not needed.
-    //  the ProcedureDeclaration closure does not contain arguments or variables
-    //  until it is called:
-
-    // Create closure for this procedure definition
-    // shared_ptr<SymbolTable> closure = make_shared<SymbolTable>(*current_symbol_table);
-
-    // Place this object in the closure
-    //closure->Set(this->id->name, object);
-    
-
-/* TODO: For debugging
-    // fprintf(stderr, "Created function '%s' in closure %d\n", this->id->name, current_symbol_table->sequence); // TODO: Debugging
-
-    // Get desired procedure object
-    shared_ptr<Object> object2 = current_symbol_table->Get(this->id->name);
-
-    // Assert  it's really a procedure (TODO: For debug)
-    if(object2->GetKind() != SymbolProcedure)
-    {
-            fprintf(stderr, "error: '%s' failed to save into closure %d)\n", this->id->name, current_symbol_table->sequence);
-            exit(1);
-    }
-*/
 }
 
 ProcedureCall::ProcedureCall(Id *id, forward_list<ProcedureCallArgument*>* arguments) : id(id), arguments(arguments)
@@ -200,13 +173,11 @@ void ProcedureCall::Execute()
 {
     try
     {
-        minlog::debug("Fetching procedure '%s' (in closure %d)...\n", this->id->name, current_symbol_table->sequence); // TODO: Just for debug
 
         // Get procedure object out of current symbol table
+        minlog::debug("Fetching procedure '%s' (from closure %d)...\n", this->id->name, current_symbol_table->sequence);
         Object* procedure = current_symbol_table->Get(this->id->name);
-
-        minlog::debug("Called procedure '%s' (with closure %d)...\n", this->id->name, procedure->closure->sequence); // TODO: Just for debug
-
+        minlog::debug("Calling procedure '%s' (using closure %d)...\n", this->id->name, procedure->closure->sequence);
 
         // Assert  it's really a procedure
         if(procedure->GetKind() != SymbolProcedure)
@@ -228,7 +199,7 @@ void ProcedureCall::Execute()
         {
             ProcedureCallArgument* callArgument = (*i.first);
             Id* declaredArgument = (*i.second);
-            minlog::debug("  arg='%s'\n", declaredArgument->name); // TODO: Just for debug
+            minlog::debug("  arg='%s'\n", declaredArgument->name);
             const char *argName = declaredArgument->name;
             Object* argValue = new Object(callArgument->expression->Evaluate());
             closureWithArgs->Set(argName, argValue);
@@ -242,7 +213,7 @@ void ProcedureCall::Execute()
         current_symbol_table = closureWithArgs;
 
         // Execute the procedure
-        minlog::debug("  executing %s\n", this->id->name); // TODO: Just doing this for debugging
+        minlog::debug("  executing %s\n", this->id->name);
         ProcedureDeclaration* assignment = procedure->GetProcedure();
         assignment->statements->Execute();
     }
