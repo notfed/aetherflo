@@ -48,7 +48,7 @@ To compile the interpreter and run a sample app:
     git clone https://github.com/notfed/aetherflo.git aetherflo
     cd aetherflo
     make
-    ./floc < sample.flo
+    ./floc < samples/sample.flo
 
 The first line will compile the interpreter. The second will run a sample aetherflo app.
 
