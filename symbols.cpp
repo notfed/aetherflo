@@ -51,7 +51,9 @@ SymbolTable::SymbolTable() : sequence(++last_sequence)
 
 SymbolTable::SymbolTable(const SymbolTable& cloneFrom) : sequence(++last_sequence)
 {
+
     this->symbols = cloneFrom.symbols;
+    fprintf(stderr, "Copying closure %d to %d (size %d->%d)\n", cloneFrom.sequence, this->sequence, (int)cloneFrom.symbols.size(), (int)this->symbols.size()); // TODO: Debug
     /* TODO: Deleteme
     for(auto it : cloneFrom->symbols)
     {
@@ -79,10 +81,12 @@ void SymbolTable::Set(string name, Object* object)
 
 SymbolTableStateGuard::SymbolTableStateGuard()
 {
+    fprintf(stderr, "Switching to closure %d\n", Symbols::current_symbol_table->sequence);
     this->prev_symbol_table = Symbols::current_symbol_table;
 }
 
 SymbolTableStateGuard::~SymbolTableStateGuard()
 {
+    fprintf(stderr, "Switching back to closure %d\n", this->prev_symbol_table->sequence);
     Symbols::current_symbol_table = this->prev_symbol_table;
 }

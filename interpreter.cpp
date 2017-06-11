@@ -138,13 +138,17 @@ void ProcedureDeclaration::Execute()
     int argumentsSize = 0;
     for(auto iter : *this->arguments) ++argumentsSize;
 
-    fprintf(stderr, "Declaring procedure '%s'(%d args) (closure %d)...\n", this->id->name, argumentsSize, current_symbol_table->sequence); // TODO: Just for debug
-
     // Clone the current symbol table into a closure
     SymbolTable* closure = new SymbolTable(*current_symbol_table);
 
     // Create object for procedure, with newly created closure as its closure
     Object* procedure = new Object(this, closure);
+
+    // Place the procedure in its own closure
+    closure->Set(this->id->name, procedure);
+
+    fprintf(stderr, "Declaring procedure '%s'(%d args) (in closure %d with closure %d)...\n", this->id->name, argumentsSize, current_symbol_table->sequence, closure->sequence); // TODO: Just for debug
+
 
     // Place this object in the current symbol table
     current_symbol_table->Set(this->id->name, procedure);
@@ -188,10 +192,13 @@ void ProcedureCall::Execute()
 {
     try
     {
-        fprintf(stderr, "Called procedure '%s' (closure %d)...\n", this->id->name, current_symbol_table->sequence); // TODO: Just for debug
+        fprintf(stderr, "Fetching procedure '%s' (in closure %d)...\n", this->id->name, current_symbol_table->sequence); // TODO: Just for debug
 
         // Get procedure object out of current symbol table
         Object* procedure = current_symbol_table->Get(this->id->name);
+
+        fprintf(stderr, "Called procedure '%s' (with closure %d)...\n", this->id->name, procedure->closure->sequence); // TODO: Just for debug
+
 
         // Assert  it's really a procedure
         if(procedure->GetKind() != SymbolProcedure)
@@ -220,7 +227,7 @@ void ProcedureCall::Execute()
         }
 
         // Backup the current symbol table
-        SymbolTableStateGuard guard();
+        SymbolTableStateGuard guard;
 
         // Use our new closureWithArgs during our function call
         current_symbol_table = closureWithArgs;
